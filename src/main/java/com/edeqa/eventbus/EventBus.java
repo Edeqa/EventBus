@@ -81,7 +81,6 @@ public class EventBus {
         }
     }
 
-
     /**
      * Will post event/object to each holder in eventBus entirely.
      */
