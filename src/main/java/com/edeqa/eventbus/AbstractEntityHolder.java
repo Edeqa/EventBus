@@ -18,6 +18,7 @@ abstract public class AbstractEntityHolder<T> {
         this.context = context;
     }
 
+    @SuppressWarnings("WeakerAccess")
     public String getType() {
         return this.getClass().getSimpleName();
     }
