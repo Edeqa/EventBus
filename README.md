@@ -1,6 +1,6 @@
 # EventBus
 
-Add:
+Add to the project's build.gradle:
 
     allprojects {
         repositories {
@@ -9,7 +9,7 @@ Add:
     }
 
 
-And then:
+And then add to the app's build.gradle:
 
 
     dependencies {
