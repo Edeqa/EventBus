@@ -1,5 +1,9 @@
 # EventBus
 
+Simple event bus.
+
+## How to add
+
 Add to the project's build.gradle:
 
     allprojects {
@@ -16,7 +20,7 @@ And then add to the app's build.gradle:
         compile 'com.github.edeqa:eventbus:master-SNAPSHOT'
     }
 
-How to use.
+## How to use
 
 First, create event bus:
 
@@ -40,6 +44,7 @@ Make class inherited from AbstractEntityHolder and implement onEvent for handle 
             return true;
         }
 
+        @Override
         public boolean onEvent(String eventName, Object eventObject) {
             switch(eventName) {
                 case "event1":
@@ -50,8 +55,6 @@ Make class inherited from AbstractEntityHolder and implement onEvent for handle 
                     break;
                 case "event3":
                 case "event4":
-                case "event5":
-                case "event6":
                     break;
             }
             return true; // if returns false then chain will be interrupted
@@ -66,10 +69,10 @@ Send event:
 
     eventBus.post("event1");
     eventBus.post("event2", "argument2");
-    eventBus.postSync("event3");
-    eventBus.postSync("event4", "argument4");
 
 Send event for all registered buses:
 
-    EventBus.postAll("event5");
-    EventBus.postAll("event6", "argument6");
+    EventBus.postAll("event3");
+    EventBus.postAll("event4", "argument4");
+
+Event will be posted in the order that holders were registered.
