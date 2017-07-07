@@ -24,13 +24,14 @@ And then add to the app's build.gradle:
 
 First, create event bus:
 
-    eventBus = new EventBus("first");
+    eventBus1 = new EventBus("first");
+    eventBus2 = new EventBus("second");
 
 or just:
 
     eventBus = new EventBus();
 
-Make class inherited from AbstractEntityHolder and implement onEvent for handle events and make some logic.
+Make the class inherited from AbstractEntityHolder and implement onEvent for handle events and make some logic.
 
     public class SampleHolder extends AbstractEntityHolder<MainActivity> {
 
