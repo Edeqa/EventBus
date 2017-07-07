@@ -16,9 +16,9 @@ And then add to the app's build.gradle:
         compile 'com.github.edeqa:eventbus:master-SNAPSHOT'
     }
 
-Use:
+How to use.
 
-- first, create event bus:
+First, create event bus:
 
     eventBus = new EventBus("first");
 
@@ -26,7 +26,7 @@ or just:
 
     eventBus = new EventBus();
 
-Make class inherited from AbstractEntityHolder and register it in the bus:
+Make class inherited from AbstractEntityHolder and implement onEvent for handle events and make some logic.
 
     public class SampleHolder extends AbstractEntityHolder<MainActivity> {
 
@@ -39,9 +39,26 @@ Make class inherited from AbstractEntityHolder and register it in the bus:
             System.out.println("Event: "+eventName+", object: "+eventObject);
             return true;
         }
+
+        public boolean onEvent(String eventName, Object eventObject) {
+            switch(eventName) {
+                case "event1":
+                    System.out.println("EntityHolder name: " + getType());
+                    break;
+                case "event2":
+                    System.out.println("Event with argument: " + eventObject);
+                    break;
+                case "event3":
+                case "event4":
+                case "event5":
+                case "event6":
+                    break;
+            }
+            return true; // if returns false then chain will be interrupted
+        }
     }
 
-    ...
+Register it in the bus:
 
     eventBus.register(new SampleHolder(this));
 
