@@ -28,7 +28,7 @@ public class EventBus {
 
     public EventBus(String eventBusName) {
         this.eventBusName = eventBusName;
-        holders.put(eventBusName, new ArrayList<AbstractEntityHolder>());
+        holders.put(eventBusName, new ArrayList<>());
     }
 
     public void register(AbstractEntityHolder holder) {
@@ -60,6 +60,7 @@ public class EventBus {
     }
 
     public static void post(final String eventBusName, final String eventName, final Object eventObject) {
+        //noinspection Convert2Lambda
         executor.submit(new Runnable() {
             @Override
             public void run() {
