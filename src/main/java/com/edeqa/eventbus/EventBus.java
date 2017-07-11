@@ -18,6 +18,8 @@ public class EventBus {
 
     private static Map<String,ArrayList<AbstractEntityHolder>> holders = new HashMap<>();
 
+    private static Map<String,Runner> runners = new HashMap<>();
+
     private String eventBusName;
 
     private static ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -28,7 +30,9 @@ public class EventBus {
 
     public EventBus(String eventBusName) {
         this.eventBusName = eventBusName;
-        holders.put(eventBusName, new ArrayList<>());
+        holders.put(eventBusName, new ArrayList<AbstractEntityHolder>());
+
+        setRunner(mainRunner);
     }
 
     public void register(AbstractEntityHolder holder) {
@@ -69,17 +73,21 @@ public class EventBus {
         });
     }
 
-    public static void postSync(String eventBusName, String eventName, Object eventObject) {
-        for (AbstractEntityHolder x : holders.get(eventBusName)) {
-            try {
-                if (!x.onEvent(eventName, eventObject)) {
-                    break;
+    public static void postSync(final String eventBusName, final String eventName, final Object eventObject) {
+        runners.get(eventBusName).post(new Runnable() {
+            @Override
+            public void run() {
+                for (AbstractEntityHolder x : holders.get(eventBusName)) {
+                    try {
+                        if (!x.onEvent(eventName, eventObject)) {
+                            break;
+                        }
+                    } catch (Exception e) {
+                        System.err.println("with eventBusName '" + eventBusName + "', holder '" + x.getType() + "' and eventName '" + eventName + "'");
+                        e.printStackTrace();
+                    }
                 }
-            } catch (Exception e) {
-                System.err.println("with eventBusName '" + eventBusName + ", holder '"+ x.getType() +"' and eventName '" + eventName + "'");
-                e.printStackTrace();
-            }
-        }
+            }});
     }
 
     /**
@@ -116,4 +124,27 @@ public class EventBus {
         }
         holders = new HashMap<>();
     }
+
+    public void setRunner(Runner runner) {
+        runners.put(eventBusName, runner);
+    }
+
+    public interface Runner {
+        void post(Runnable runnable);
+    }
+
+    private static Runner mainRunner = new Runner() {
+        @Override
+        public void post(Runnable runnable) {
+            runnable.run();
+        }
+    };
+
+    public static void setMainRunner(Runner runner) {
+        EventBus.mainRunner = runner;
+        for(Map.Entry<String,Runner> entry: runners.entrySet()) {
+            runners.put(entry.getKey(), runner);
+        }
+    }
+
 }
