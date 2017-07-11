@@ -16,9 +16,9 @@ public class EventBus {
 
     public static final String DEFAULT_NAME = "default";
 
-    private static Map<String,ArrayList<AbstractEntityHolder>> holders = new HashMap<>();
+    private static volatile Map<String,ArrayList<AbstractEntityHolder>> holders = new HashMap<>();
 
-    private static Map<String,Runner> runners = new HashMap<>();
+    private static volatile Map<String,Runner> runners = new HashMap<>();
 
     private String eventBusName;
 
@@ -35,24 +35,34 @@ public class EventBus {
         setRunner(mainRunner);
     }
 
-    public void register(AbstractEntityHolder holder) {
+    public void register(final AbstractEntityHolder holder) {
         holders.get(eventBusName).add(holder);
-        try {
-            holder.start();
-        } catch (Exception e) {
-            System.err.println("with eventBusName '" + eventBusName + "' and holder " + holder);
-            e.printStackTrace();
-        }
+        runners.get(eventBusName).post(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    holder.start();
+                } catch (Exception e) {
+                    System.err.println("with eventBusName '" + eventBusName + "' and holder " + holder);
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
-    public void unregister(AbstractEntityHolder holder) {
-        try {
-            holder.finish();
-        } catch (Exception e) {
-            System.err.println("with eventBusName '" + eventBusName + "' and holder " + holder);
-            e.printStackTrace();
-        }
-        holders.get(eventBusName).remove(holder);
+    public void unregister(final AbstractEntityHolder holder) {
+        runners.get(eventBusName).post(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    holder.finish();
+                } catch (Exception e) {
+                    System.err.println("with eventBusName '" + eventBusName + "' and holder " + holder);
+                    e.printStackTrace();
+                }
+                holders.get(eventBusName).remove(holder);
+            }
+        });
     }
 
     public void post(String eventName) {
