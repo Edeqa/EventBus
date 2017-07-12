@@ -1,7 +1,6 @@
 # EventBus
 
-[![Release](https://jitpack.io/v/Edeqa/EventBus.svg)]
-(https://jitpack.io/#Edeqa/EventBus)
+![Release](https://jitpack.io/v/Edeqa/EventBus.svg)
 
 Simple event bus.
 
