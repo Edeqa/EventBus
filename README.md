@@ -1,5 +1,8 @@
 # EventBus
 
+[![Release](https://jitpack.io/v/Edeqa/EventBus.svg)]
+(https://jitpack.io/#Edeqa/EventBus)
+
 Simple event bus.
 
 ## How to add
