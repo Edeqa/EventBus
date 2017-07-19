@@ -35,9 +35,9 @@ or just:
 
 Make the class inherited from AbstractEntityHolder and implement onEvent for handle events and make some logic.
 
-    public class SampleHolder extends AbstractEntityHolder<MainActivity> {
+    public class SampleHolder extends AbstractEntityHolder<Context> {
 
-        public SampleHolder(MainActivity context) {
+        public SampleHolder(Context context) {
             super(context);
         }
 
