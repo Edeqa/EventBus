@@ -68,7 +68,7 @@ Register it in the bus:
 
     eventBus.register(new SampleHolder(this));
 
-#### Posting event
+### Posting event
 
 Post event:
 
@@ -82,7 +82,7 @@ Post event to all registered buses:
 
 Event will be posted to all holders in the order that holders were registered.
 
-#### Limit events spreading
+### Limit events spreading
 
 If some `AbstractEntityHolder#onEvent` in the queue returns `false` then next holders will not be called.
 
