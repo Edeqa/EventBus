@@ -1,5 +1,7 @@
 # EventBus
 
+[![](https://jitpack.io/v/edeqa/eventbus.svg)](https://jitpack.io/#edeqa/eventbus)
+
 Simple event bus.
 
 ## How to add
@@ -17,7 +19,7 @@ And then add to the app's build.gradle:
 
 
     dependencies {
-        compile 'com.github.edeqa:eventbus:master-SNAPSHOT'
+        compile 'com.github.edeqa:eventbus:0.3'
     }
 
 ## How to use
