@@ -19,7 +19,7 @@ And then add to the app's build.gradle:
 
 
     dependencies {
-        compile 'com.github.edeqa:eventbus:0.4'
+        compile 'com.github.edeqa:eventbus:0.3'
     }
 
 ## How to use
@@ -84,7 +84,7 @@ Event will be posted to all holders in the order that holders were registered.
 
 ### Limit events spreading
 
-If some `AbstractEntityHolder#onEvent` in the queue returns `false` then next holders will not be called.
+If some `AbstractEntityHolder#onEvent` returns `false` then next holders in the queue will not be called.
 
 You can also limit the spreading of events using `AbstractEntityHolder#events`:
 
@@ -119,7 +119,7 @@ Note that `EventBus.setMainRunner` overrides all previously defined runners.
 
 ## What's new
 
-0.4 - export events
+0.4 - limit events
 
 0.3 - fixes
 
