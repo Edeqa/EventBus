@@ -19,7 +19,7 @@ And then add to the app's build.gradle:
 
 
     dependencies {
-        compile 'com.github.edeqa:eventbus:0.3'
+        compile 'com.github.edeqa:eventbus:0.4'
     }
 
 ## How to use
