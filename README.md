@@ -6,7 +6,9 @@ Simple event bus.
 
 ## How to add
 
-Add to the project's build.gradle:
+### Gradle
+
+Step 1. Add the JitPack repository in your root build.gradle at the end of repositories:
 
     allprojects {
         repositories {
@@ -14,13 +16,30 @@ Add to the project's build.gradle:
         }
     }
 
-
-And then add to the app's build.gradle:
-
+Step 2. Add the dependency in the app's build.gradle:
 
     dependencies {
         compile 'com.github.edeqa:eventbus:0.4'
     }
+
+### Maven
+
+Step 1. Add the JitPack repository to your build file:
+
+    <repositories>
+		<repository>
+		    <id>jitpack.io</id>
+		    <url>https://jitpack.io</url>
+		</repository>
+	</repositories>
+    
+Step 2. Add the dependency:
+
+    <dependency>
+	    <groupId>com.github.User</groupId>
+	    <artifactId>Repo</artifactId>
+	    <version>Tag</version>
+	</dependency>
 
 ## How to use
 
