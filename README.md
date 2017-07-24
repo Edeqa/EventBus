@@ -36,10 +36,10 @@ Step 1. Add the JitPack repository to your build file:
 Step 2. Add the dependency:
 
     <dependency>
-	    <groupId>com.github.User</groupId>
-	    <artifactId>Repo</artifactId>
-	    <version>Tag</version>
-	</dependency>
+	<groupId>com.github.edeqa</groupId>
+	<artifactId>eventbus</artifactId>
+	<version>0.4</version>
+    </dependency>
 
 ## How to use
 
