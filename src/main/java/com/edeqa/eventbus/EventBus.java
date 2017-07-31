@@ -3,13 +3,15 @@
  * https://github.com/Edeqa/EventBus
  *
  * Copyright (C) 2017 Edeqa <http://www.edeqa.com>
- * Created by Edward Mukhutdinov (tujger@gmail.com)
+ * Created by Edward Mukhutdinov <tujger@gmail.com>
  */
 
 package com.edeqa.eventbus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -20,13 +22,13 @@ public class EventBus {
 
     public static final String DEFAULT_NAME = "default";
 
-    private static Map<String, List<AbstractEntityHolder>> holders = new HashMap<>();
+    private static Map<String, List<AbstractEntityHolder>> holders = new LinkedHashMap<>();
 
     private static Map<String,Runner> runners = new HashMap<>();
 
     private String eventBusName;
 
-    private static Map<String, List<AbstractEntityHolder>> eventsMap = new HashMap<>();
+    private static Map<String, List<AbstractEntityHolder>> eventsMap = new LinkedHashMap<>();
 
     private static ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -80,12 +82,14 @@ public class EventBus {
         }
         holders.get(eventBusName).remove(holder);
 
-        for(Map.Entry<String,List<AbstractEntityHolder>> entry:eventsMap.entrySet()) {
+        Iterator<Map.Entry<String, List<AbstractEntityHolder>>> iter = eventsMap.entrySet().iterator();
+        while(iter.hasNext()) {
+            Map.Entry<String, List<AbstractEntityHolder>> entry = iter.next();
             if(entry.getValue().contains(holder)) {
                 entry.getValue().remove(holder);
             }
             if(entry.getValue().size() == 0) {
-                eventsMap.remove(entry);
+                iter.remove();
             }
         }
     }
@@ -94,7 +98,15 @@ public class EventBus {
         post(eventName, null);
     }
 
+    public void fire(String eventName) {
+        post(eventName, null);
+    }
+
     public void post(String eventName, Object eventObject) {
+        post(eventBusName, eventName, eventObject);
+    }
+
+    public void fire(String eventName, Object eventObject) {
         post(eventBusName, eventName, eventObject);
     }
 
@@ -106,6 +118,10 @@ public class EventBus {
                 postSync(eventBusName, eventName, eventObject);
             }
         });
+    }
+
+    public static void fire(final String eventBusName, final String eventName, final Object eventObject) {
+        post(eventBusName, eventName, eventObject);
     }
 
     public static void postSync(final String eventBusName, final String eventName, final Object eventObject) {
@@ -126,16 +142,27 @@ public class EventBus {
             }});
     }
 
-    /**
-     * Will post event/object to each holder in eventBus entirely.
-     */
+        /**
+         * Will post event/object to each holder in eventBus entirely.
+         */
     public static void postAll(String eventName, Object eventObject) {
         for(Map.Entry<String,List<AbstractEntityHolder>> x: holders.entrySet()) {
             post(x.getKey(), eventName, eventObject);
         }
     }
 
+    /**
+     * Will post event/object to each holder in eventBus entirely.
+     */
+    public static void fireAll(String eventName, Object eventObject) {
+        postAll(eventName, eventObject);
+    }
+
     public static void postAll(String eventName) {
+        postAll(eventName, null);
+    }
+
+    public static void fireAll(String eventName) {
         postAll(eventName, null);
     }
 
@@ -145,12 +172,14 @@ public class EventBus {
     public void clear() {
         for(AbstractEntityHolder holder: holders.get(eventBusName)) {
             holder.finish();
-            for(Map.Entry<String,List<AbstractEntityHolder>> entry:eventsMap.entrySet()) {
+            Iterator<Map.Entry<String, List<AbstractEntityHolder>>> iter = eventsMap.entrySet().iterator();
+            while(iter.hasNext()) {
+                Map.Entry<String, List<AbstractEntityHolder>> entry = iter.next();
                 if(entry.getValue().contains(holder)) {
                     entry.getValue().remove(holder);
                 }
                 if(entry.getValue().size() == 0) {
-                    eventsMap.remove(entry);
+                    iter.remove();
                 }
             }
         }
@@ -191,6 +220,5 @@ public class EventBus {
             runners.put(entry.getKey(), runner);
         }
     }
-
 
 }

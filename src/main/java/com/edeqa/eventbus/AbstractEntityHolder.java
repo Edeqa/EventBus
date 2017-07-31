@@ -3,7 +3,7 @@
  * https://github.com/Edeqa/EventBus
  *
  * Copyright (C) 2017 Edeqa <http://www.edeqa.com>
- * Created by Edward Mukhutdinov (tujger@gmail.com)
+ * Created by Edward Mukhutdinov <tujger@gmail.com>
  */
 
 package com.edeqa.eventbus;

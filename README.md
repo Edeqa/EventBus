@@ -101,6 +101,10 @@ Post event to all registered buses:
 
 Event will be posted to all holders in the order that holders were registered.
 
+You can use `fire` instead of `post` - it's a synonym:
+
+    eventBus.fire("event1");
+
 ### Limit events spreading
 
 If some `AbstractEntityHolder#onEvent` returns `false` then next holders in the queue will not be called.
@@ -137,6 +141,8 @@ Or separately:
 Note that `EventBus.setMainRunner` overrides all previously defined runners.
 
 ## What's new
+
+0.5 - `fire` - synonym for `post`; fixes
 
 0.4 - limit events
 
