@@ -142,7 +142,7 @@ Note that `EventBus.setMainRunner` overrides all previously defined runners.
 
 ## What's new
 
-0.5 - `fire` - synonym for `post`; fixes
+0.5 - fixes
 
 0.4 - limit events
 

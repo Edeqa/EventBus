@@ -16,7 +16,11 @@ abstract public class AbstractEntityHolder<T> {
 
     protected T context;
 
+    protected AbstractEntityHolder() {
+    }
+
     protected AbstractEntityHolder(T context) {
+        this();
         this.context = context;
     }
 

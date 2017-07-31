@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
-public class EventBus {
+public class EventBus<T extends AbstractEntityHolder> {
 
     public static final String DEFAULT_NAME = "default";
 
@@ -26,9 +26,11 @@ public class EventBus {
 
     private static Map<String,Runner> runners = new HashMap<>();
 
-    private String eventBusName;
-
     private static Map<String, List<AbstractEntityHolder>> eventsMap = new LinkedHashMap<>();
+
+    protected Map<String, AbstractEntityHolder> holdersMap;
+
+    private String eventBusName;
 
     private static ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -39,11 +41,16 @@ public class EventBus {
     public EventBus(String eventBusName) {
         this.eventBusName = eventBusName;
         holders.put(eventBusName, new ArrayList<AbstractEntityHolder>());
+        holdersMap = new HashMap<>();
 
-        setRunner(mainRunner);
+        setRunner(RUNNER_DEFAULT);
     }
 
     public void register(final AbstractEntityHolder holder) {
+
+        if(holdersMap.containsKey(holder.getType())) {
+            return;
+        }
 
         //noinspection unchecked
         List<String> events = holder.events();
@@ -59,6 +66,7 @@ public class EventBus {
             System.out.println("EventBus: " + holder.getType() + " catches following events: " + events);
         }
 
+        holdersMap.put(holder.getType(), holder);
         holders.get(eventBusName).add(holder);
         runners.get(eventBusName).post(new Runnable() {
             @Override
@@ -94,19 +102,19 @@ public class EventBus {
         }
     }
 
+    public List<T> getHolders() {
+        return (List<T>) getHolders(eventBusName);
+    }
+
+    public static List<AbstractEntityHolder> getHolders(String eventBusName) {
+        return holders.get(eventBusName);
+    }
+
     public void post(String eventName) {
         post(eventName, null);
     }
 
-    public void fire(String eventName) {
-        post(eventName, null);
-    }
-
     public void post(String eventName, Object eventObject) {
-        post(eventBusName, eventName, eventObject);
-    }
-
-    public void fire(String eventName, Object eventObject) {
         post(eventBusName, eventName, eventObject);
     }
 
@@ -120,10 +128,6 @@ public class EventBus {
         });
     }
 
-    public static void fire(final String eventBusName, final String eventName, final Object eventObject) {
-        post(eventBusName, eventName, eventObject);
-    }
-
     public static void postSync(final String eventBusName, final String eventName, final Object eventObject) {
         runners.get(eventBusName).post(new Runnable() {
             @Override
@@ -135,7 +139,7 @@ public class EventBus {
                             break;
                         }
                     } catch (Exception e) {
-                        System.err.println("with eventBusName '" + eventBusName + "', holder '" + x.getType() + "' and eventName '" + eventName + "'");
+                        System.err.println("with eventBusName '" + eventBusName + "', holder '" + x.getType() + "', eventName '" + eventName + "' and eventObject: " + eventObject);
                         e.printStackTrace();
                     }
                 }
@@ -151,18 +155,7 @@ public class EventBus {
         }
     }
 
-    /**
-     * Will post event/object to each holder in eventBus entirely.
-     */
-    public static void fireAll(String eventName, Object eventObject) {
-        postAll(eventName, eventObject);
-    }
-
     public static void postAll(String eventName) {
-        postAll(eventName, null);
-    }
-
-    public static void fireAll(String eventName) {
         postAll(eventName, null);
     }
 
@@ -207,7 +200,7 @@ public class EventBus {
         void post(Runnable runnable);
     }
 
-    private static Runner mainRunner = new Runner() {
+    public static Runner RUNNER_DEFAULT = new Runner() {
         @Override
         public void post(Runnable runnable) {
             runnable.run();
@@ -215,10 +208,14 @@ public class EventBus {
     };
 
     public static void setMainRunner(Runner runner) {
-        EventBus.mainRunner = runner;
+        EventBus.RUNNER_DEFAULT = runner;
         for(Map.Entry<String,Runner> entry: runners.entrySet()) {
             runners.put(entry.getKey(), runner);
         }
     }
 
+    public AbstractEntityHolder getHolder(String type) {
+        if(holdersMap.containsKey(type)) return holdersMap.get(type);
+        return null;
+    }
 }
