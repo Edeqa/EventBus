@@ -163,7 +163,7 @@ You can switch log details:
 
     EventBus.LOGGING_LEVEL = Level.ALL;
     
-Possible values: `ALL`, `FINE`, `CONFIG`, `INFO`, `WARNING`, `SEVERE`. Default is `WARNING`. 
+Possible values: `ALL`, `FINE`, `CONFIG`, `INFO`, `WARNING`, `SEVERE`. Default is `WARNING`.
 
 ### Inspect events
 
