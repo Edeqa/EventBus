@@ -187,7 +187,7 @@ public class EventBus<T extends AbstractEntityHolder> {
     /**
      * Will post runnable in the queue with events.
      */
-    public static void post(String eventBusName, Runnable runnable) {
+    public static void postRunnable(String eventBusName, Runnable runnable) {
         LOGGER.fine("EventBusName: " + eventBusName + ", starting runnable: " + runnable);
         runners.get(eventBusName).post(runnable);
     }
@@ -230,7 +230,7 @@ public class EventBus<T extends AbstractEntityHolder> {
 
     public static void postAll(Runnable runnable) {
         for(Map.Entry<String,Map<String, AbstractEntityHolder>> x: holders.entrySet()) {
-            post(x.getKey(), runnable);
+            postRunnable(x.getKey(), runnable);
         }
     }
 

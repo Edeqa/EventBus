@@ -176,6 +176,8 @@ This will throw the stacktrace when these events happen.
 
 ## What's new
 
+0.6 - eventBus#postRunnable
+
 0.5 - update#holder; post#Runnable; EventBus#inspect; debug; fixes
 
 0.4 - limit events
