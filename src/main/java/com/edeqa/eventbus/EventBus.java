@@ -205,7 +205,7 @@ public class EventBus<T extends AbstractEntityHolder> {
                             break;
                         }
                     } catch (Exception e) {
-                        LOGGER.severe("EventBusName: " + eventBusName + ", postSync failed for holder: " + entry.getValue() + ", eventName: " + eventName + ", eventObject: " + eventObject);
+                        LOGGER.severe("EventBusName: " + eventBusName + ", postSync failed for holder: " + entry.getValue() + ", eventName: " + eventName + ", eventObject: " + eventObject + ". Use EventBus.inspect(\""+eventName+"\"); to resolve the issue.");
                         e.printStackTrace();
                     }
                 }

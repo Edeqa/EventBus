@@ -157,15 +157,6 @@ Or separately:
 
 Note that `EventBus.setMainRunner` overrides all previously defined runners.
 
-## Inspect events
-
-Deep inspection for certain events can be set next way:
-
-    EventBus.inspect("event1");
-    EventBus.inspect("event2");
-    
-This will throw the stacktrace when these events happen.
-
 ## Debugging
 
 You can switch log details:
@@ -173,6 +164,15 @@ You can switch log details:
     EventBus.LOGGING_LEVEL = Level.ALL;
     
 Possible values: `ALL`, `FINE`, `CONFIG`, `INFO`, `WARNING`, `SEVERE`. Default is `WARNING`.
+
+### Inspect events
+
+Deep inspection for certain events can be set next way:
+
+    EventBus.inspect("event1");
+    EventBus.inspect("event2");
+    
+This will throw the stacktrace when these events happen.
 
 ## What's new
 
