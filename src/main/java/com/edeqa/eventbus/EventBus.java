@@ -129,8 +129,6 @@ public class EventBus<T extends AbstractEntityHolder> {
         return new ArrayList<>(all.values());
     }
 
-
-
     public static List<AbstractEntityHolder> getHolders(String eventBusName) {
         return holders.get(eventBusName);
     }
