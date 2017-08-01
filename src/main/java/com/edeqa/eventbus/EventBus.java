@@ -9,6 +9,7 @@
 package com.edeqa.eventbus;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -81,6 +82,18 @@ public class EventBus<T extends AbstractEntityHolder> {
         });
     }
 
+    public void update(final AbstractEntityHolder holder) {
+        if(!holdersMap.containsKey(holder.getType())) {
+            return;
+        }
+        int index = holders.get(eventBusName).indexOf(holdersMap.get(holder.getType()));
+        holders.get(eventBusName).remove(index);
+
+        holdersMap.put(holder.getType(), holder);
+
+        holders.get(eventBusName).add(index, holder);
+    }
+
     public void unregister(AbstractEntityHolder holder) {
         try {
             holder.finish();
@@ -105,6 +118,18 @@ public class EventBus<T extends AbstractEntityHolder> {
     public List<T> getHolders() {
         return (List<T>) getHolders(eventBusName);
     }
+
+    public static List<AbstractEntityHolder> getAllHolders() {
+        Map<String, AbstractEntityHolder> all = new HashMap<>();
+        for(Map.Entry<String, List<AbstractEntityHolder>> entry: holders.entrySet()) {
+            for(AbstractEntityHolder item: entry.getValue()) {
+                all.put(item.getType(), item);
+            }
+        }
+        return new ArrayList<>(all.values());
+    }
+
+
 
     public static List<AbstractEntityHolder> getHolders(String eventBusName) {
         return holders.get(eventBusName);
