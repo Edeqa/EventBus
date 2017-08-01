@@ -105,6 +105,17 @@ You can use `fire` instead of `post` - it's a synonym:
 
     eventBus.fire("event1");
 
+### Random task in the queue
+
+If you want to run some specific task in the same queue as events then use `post#Runnable`:
+
+    eventBus.post(new Runnable() {
+        @Override
+        public void run() {
+            LOGGER.severe("EventBus specific task.");
+        }
+    });
+
 ### Limit events spreading
 
 If some `AbstractEntityHolder#onEvent` returns `false` then next holders in the queue will not be called.
@@ -114,12 +125,18 @@ You can also limit the spreading of events using `AbstractEntityHolder#events`:
     @Override
     public List<String> events() {
         List<String> list = new ArrayList<>();
-        list.add("event1);
-        list.add("event2);
+        list.add("event1");
+        list.add("event2");
         return list;
     }
 
 Events `event1` and `event2` will be posted only to specific holder (or holders).
+
+### Updating holder
+
+You can update the holder without losing its position in the queue:
+
+    eventBus.update(new SampleHolder(this));
 
 ## Android UI specific
 
@@ -140,9 +157,26 @@ Or separately:
 
 Note that `EventBus.setMainRunner` overrides all previously defined runners.
 
+## Inspect events
+
+Deep inspection for certain events can be set next way:
+
+    EventBus.inspect("event1");
+    EventBus.inspect("event2");
+    
+This will throw the stacktrace when these events happen.
+
+## Debugging
+
+You can switch log details:
+
+    EventBus.LOGGING_LEVEL = Level.ALL;
+    
+Possible values: `ALL`, `FINE`, `CONFIG`, `INFO`, `WARNING`, `SEVERE`. Default is `WARNING`.
+
 ## What's new
 
-0.5 - fixes
+0.5 - update#holder; post#Runnable; EventBus#inspect; debug; fixes
 
 0.4 - limit events
 

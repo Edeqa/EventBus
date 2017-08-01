@@ -9,14 +9,21 @@
 package com.edeqa.eventbus;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 abstract public class AbstractEntityHolder<T> {
 
     public static final String PRINT_HOLDER_NAME = "print_holder_name";
+    protected static Logger LOGGER = Logger.getLogger(EventBus.class.getName());
 
     protected T context;
 
+    private Level loggingLevel = Level.WARNING;
+
     protected AbstractEntityHolder() {
+        LOGGER.setLevel(loggingLevel);
+        LOGGER.info("AbstractEntityHolder:init");
     }
 
     protected AbstractEntityHolder(T context) {
@@ -52,6 +59,7 @@ abstract public class AbstractEntityHolder<T> {
     }
 
     public boolean onEvent(String eventName, Object eventObject) {
+        LOGGER.info("onEvent performs with eventName: " + eventName + ", eventObject: " + eventObject);
         switch(eventName) {
             case PRINT_HOLDER_NAME:
                 System.out.println("EntityHolder name: " + getType());
@@ -60,6 +68,9 @@ abstract public class AbstractEntityHolder<T> {
         return true;
     }
 
-
+    public void setLoggingLevel(Level level) {
+        loggingLevel = level;
+        LOGGER.setLevel(loggingLevel);
+    }
 
 }

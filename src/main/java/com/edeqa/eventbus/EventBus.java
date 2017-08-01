@@ -73,6 +73,7 @@ public class EventBus<T extends AbstractEntityHolder> {
             LOGGER.severe("EventBus: " + eventBusName + " registration failed, holder already defined.");
             return;
         }
+        holder.setLoggingLevel(LOGGING_LEVEL);
 
         //noinspection unchecked
         List<String> events = holder.events();
@@ -165,24 +166,27 @@ public class EventBus<T extends AbstractEntityHolder> {
         post(eventName, null);
     }
 
+    public void post(Runnable runnable) {
+        post(eventBusName, runnable);
+    }
+
     public void post(String eventName, Object eventObject) {
         post(eventBusName, eventName, eventObject);
     }
 
-    public static void post(final String eventBusName, final String eventName, final Object eventObject) {
+    public static void post(String eventBusName, String eventName, Object eventObject) {
         if(inspect.size() > 0) {
             if(inspect.contains(eventName)) {
                 LOGGER.severe("EventBusName: " + eventBusName + ", inspection for eventName " + eventName + " caught:");
                 Thread.dumpStack();
             }
         }
-        //noinspection Convert2Lambda
-//        executor.submit(new Runnable() {
-//            @Override
-//            public void run() {
         postSync(eventBusName, eventName, eventObject);
-//            }
-//        });
+    }
+
+    public static void post(String eventBusName, Runnable runnable) {
+        LOGGER.fine("EventBusName: " + eventBusName + ", starting runnable: " + runnable);
+        runners.get(eventBusName).post(runnable);
     }
 
     public static void postSync(final String eventBusName, final String eventName, final Object eventObject) {
@@ -190,7 +194,6 @@ public class EventBus<T extends AbstractEntityHolder> {
             @Override
             public void run() {
                 LOGGER.fine("EventBusName: " + eventBusName + ", starting postSync for eventName: " + eventName + ", eventObject: " + eventObject);
-
                 for (Map.Entry<String, AbstractEntityHolder> entry : holders.get(eventBusName).entrySet()) {
                     try {
                         if(eventsMap.containsKey(eventName) && !eventsMap.get(eventName).contains(entry.getValue())) {
@@ -220,6 +223,12 @@ public class EventBus<T extends AbstractEntityHolder> {
 
     public static void postAll(String eventName) {
         postAll(eventName, null);
+    }
+
+    public static void postAll(Runnable runnable) {
+        for(Map.Entry<String,Map<String, AbstractEntityHolder>> x: holders.entrySet()) {
+            post(x.getKey(), runnable);
+        }
     }
 
     /**
@@ -271,7 +280,6 @@ public class EventBus<T extends AbstractEntityHolder> {
                 @Override
                 public void run() {
                     runnable.run();
-//            postSync(eventBusName, eventName, eventObject);
                 }
             });
         }
