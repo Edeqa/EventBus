@@ -187,6 +187,13 @@ public class EventBus<T extends AbstractEntityHolder> {
     /**
      * Will post runnable in the queue with events.
      */
+    public void postRunnable(Runnable runnable) {
+        postRunnable(eventBusName, runnable);
+    }
+
+    /**
+     * Will post runnable in the queue with events.
+     */
     public static void postRunnable(String eventBusName, Runnable runnable) {
         LOGGER.fine("EventBusName: " + eventBusName + ", starting runnable: " + runnable);
         runners.get(eventBusName).post(runnable);
