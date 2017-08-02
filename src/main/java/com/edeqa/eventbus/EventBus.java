@@ -35,7 +35,7 @@ public class EventBus<T extends AbstractEntityHolder> {
 
     private static Map<String, List<AbstractEntityHolder>> eventsMap = new LinkedHashMap<>();
 
-    protected Map<String, AbstractEntityHolder> holdersMap;
+    private Map<String, AbstractEntityHolder> holdersMap;
 
     private String eventBusName;
 
@@ -104,6 +104,10 @@ public class EventBus<T extends AbstractEntityHolder> {
         });
     }
 
+    /**
+     * Updates the holder and keeps its order in the queue.
+     * @param holder - instance of {@link AbstractEntityHolder}
+     */
     public void update(final AbstractEntityHolder holder) {
         if(holder == null || holder.getType() == null || holder.getType().length() == 0) {
             LOGGER.severe("EventBus: " + eventBusName + " update failed, holder is not defined.");
@@ -185,20 +189,29 @@ public class EventBus<T extends AbstractEntityHolder> {
     }
 
     /**
-     * Will post runnable in the queue with events.
+     * Will post runnable in the same queue with events.
+     * @param runnable - redefine runnable
      */
     public void postRunnable(Runnable runnable) {
         postRunnable(eventBusName, runnable);
     }
 
     /**
-     * Will post runnable in the queue with events.
+     * Will post runnable in the queue same with events.
+     * @param eventBusName - name of target event bus
+     * @param runnable - redefine runnable
      */
     public static void postRunnable(String eventBusName, Runnable runnable) {
         LOGGER.fine("EventBusName: " + eventBusName + ", starting runnable: " + runnable);
         runners.get(eventBusName).post(runnable);
     }
 
+    /**
+     * The main events poster.
+     * @param eventBusName - a target event bus
+     * @param eventName - any not empty event name, i.e. "event1"
+     * @param eventObject - any object that will be sent together with event name
+     */
     public static void postSync(final String eventBusName, final String eventName, final Object eventObject) {
         runners.get(eventBusName).post(new Runnable() {
             @Override
@@ -224,6 +237,8 @@ public class EventBus<T extends AbstractEntityHolder> {
 
     /**
      * Will post event/object to each holder in eventBus entirely.
+     * @param eventName - any not empty event name, i.e. "event1"
+     * @param eventObject - any object that will be sent together with event name
      */
     public static void postAll(String eventName, Object eventObject) {
         for(Map.Entry<String,Map<String, AbstractEntityHolder>> x: holders.entrySet()) {
@@ -235,6 +250,10 @@ public class EventBus<T extends AbstractEntityHolder> {
         postAll(eventName, null);
     }
 
+    /**
+     * Will post runnable to each holder in eventBus entirely using the same queue as events.
+     * @param runnable - redefine runnable
+     */
     public static void postAll(Runnable runnable) {
         for(Map.Entry<String,Map<String, AbstractEntityHolder>> x: holders.entrySet()) {
             postRunnable(x.getKey(), runnable);
@@ -274,6 +293,11 @@ public class EventBus<T extends AbstractEntityHolder> {
         LOGGER.info("EventBus: all buses have been cleared.");
     }
 
+    /**
+     * Changes the runner for event bus. Redefine the runner if you want to send events to android
+     * main thread. See details https://github.com/edeqa/eventbus
+     * @param runner - {@link Runner}
+     */
     public void setRunner(Runner runner) {
         runners.put(eventBusName, runner);
         LOGGER.config("EventBus: " + eventBusName + " set runner: " + runner);
@@ -295,6 +319,10 @@ public class EventBus<T extends AbstractEntityHolder> {
         }
     };
 
+    /**
+     * Redefines the default runner and overrides runners in all existing buses.
+     * @param runner - {@link Runner}
+     */
     public static void setMainRunner(Runner runner) {
         EventBus.RUNNER_DEFAULT = runner;
         LOGGER.config("EventBus overrides main runner: " + runner);
@@ -308,6 +336,10 @@ public class EventBus<T extends AbstractEntityHolder> {
         return null;
     }
 
+    /**
+     * Provides the possibility for deep inspection of event specified.
+     * @param eventName - any not empty event name, i.e. "event1"
+     */
     public static void inspect(String eventName) {
         LOGGER.warning("EventBus sets event for deep inspection: " + eventName);
         inspect.add(eventName);
