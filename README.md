@@ -157,7 +157,7 @@ Or separately:
 
 Note that `EventBus.setMainRunner` overrides all previously defined runners.
 
-## Debugging
+## Troubleshooting
 
 You can switch log details:
 
@@ -167,14 +167,14 @@ Possible values: `ALL`, `FINE`, `CONFIG`, `INFO`, `WARNING`, `SEVERE`. Default i
 
 ### Inspect events
 
-Deep inspection for certain events can be set next way:
+Deep inspection for specific events can be set next way:
 
     EventBus.inspect("event1");
     EventBus.inspect("event2");
     
 This will throw the stacktrace when these events happen.
 
-## What's new
+## History
 
 0.7 - refactoring to interface; fixes;
 
@@ -189,3 +189,7 @@ This will throw the stacktrace when these events happen.
 0.2 - fixes
 
 0.1 - initial
+
+## License
+
+EventBus is licensed under an MIT license. See the `LICENSE` file for specifics.
