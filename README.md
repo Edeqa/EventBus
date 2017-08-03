@@ -19,7 +19,7 @@ Step 1. Add the JitPack repository in your root build.gradle at the end of repos
 Step 2. Add the dependency in the app's build.gradle:
 
     dependencies {
-        compile 'com.github.edeqa:eventbus:0.6'
+        compile 'com.github.edeqa:eventbus:0.7'
     }
 
 ### Maven
@@ -38,7 +38,7 @@ Step 2. Add the dependency:
     <dependency>
         <groupId>com.github.edeqa</groupId>
         <artifactId>eventbus</artifactId>
-        <version>0.6</version>
+        <version>0.7</version>
     </dependency>
 
 ## How to use
@@ -52,18 +52,18 @@ or just:
 
     eventBus = new EventBus();
 
-Make the class inherited from AbstractEntityHolder and implement onEvent for handle events and make some logic.
+Make the class implementing EntityHolder:
+
+    public class SampleHolder implements EntityHolder<Context> {
+        ...
+    }
+
+But much better is to inherit the class from AbstractEntityHolder and implement onEvent for handle events and make some logic.
 
     public class SampleHolder extends AbstractEntityHolder<Context> {
 
         public SampleHolder(Context context) {
             super(context);
-        }
-
-        @Override
-        public boolean onEvent(String eventName, Object eventObject) {
-            System.out.println("Event: "+eventName+", object: "+eventObject);
-            return true;
         }
 
         @Override
@@ -175,6 +175,8 @@ Deep inspection for certain events can be set next way:
 This will throw the stacktrace when these events happen.
 
 ## What's new
+
+0.7 - refactoring to interface; fixes;
 
 0.6 - eventBus#postRunnable; docs; fixes
 

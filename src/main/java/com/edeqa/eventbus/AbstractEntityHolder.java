@@ -13,7 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @SuppressWarnings("WeakerAccess")
-abstract public class AbstractEntityHolder<T> {
+abstract public class AbstractEntityHolder<T> implements EntityHolder<T> {
 
     public static final String PRINT_HOLDER_NAME = "print_holder_name"; //NON-NLS
     protected static Logger LOGGER = Logger.getLogger(EventBus.class.getName());
@@ -32,10 +32,12 @@ abstract public class AbstractEntityHolder<T> {
         this.context = context;
     }
 
+    @Override
     public void setContext(T context){
         this.context = context;
     }
 
+    @Override
     @SuppressWarnings("WeakerAccess")
     public String getType() {
         return this.getClass().getSimpleName();
@@ -44,11 +46,13 @@ abstract public class AbstractEntityHolder<T> {
     /**
      * Will call after holder was registered.
      */
+    @Override
     public void start() {}
 
     /**
      * Will call before holder will be unregistered.
      */
+    @Override
     public void finish() {}
 
     /**
@@ -56,10 +60,12 @@ abstract public class AbstractEntityHolder<T> {
      * (and possible other holders which define the same events) and won't spreaded to others.
      * @return list of event names can be performed only with this holder.
      */
+    @Override
     public List<String> events() {
         return null;
     }
 
+    @Override
     public boolean onEvent(String eventName, Object eventObject) {
         LOGGER.info("onEvent performs with eventName: " + eventName + ", eventObject: " + eventObject); //NON-NLS
         switch(eventName) {
@@ -70,6 +76,7 @@ abstract public class AbstractEntityHolder<T> {
         return true;
     }
 
+    @Override
     public void setLoggingLevel(Level level) {
         loggingLevel = level;
         LOGGER.setLevel(loggingLevel);

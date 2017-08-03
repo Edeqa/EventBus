@@ -21,7 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @SuppressWarnings({"WeakerAccess", "unused", "HardCodedStringLiteral"})
-public class EventBus<T extends AbstractEntityHolder> {
+public class EventBus<T extends EntityHolder> {
 
     public static final String DEFAULT_NAME = "default";
 
@@ -29,13 +29,13 @@ public class EventBus<T extends AbstractEntityHolder> {
 
     private final static Logger LOGGER = Logger.getLogger(EventBus.class.getName());
 
-    private static Map<String, Map<String, AbstractEntityHolder>> holders = new LinkedHashMap<>();
+    private static Map<String, Map<String, EntityHolder>> holders = new LinkedHashMap<>();
 
     private static Map<String, Runner> runners = new HashMap<>();
 
-    private static Map<String, List<AbstractEntityHolder>> eventsMap = new LinkedHashMap<>();
+    private static Map<String, List<EntityHolder>> eventsMap = new LinkedHashMap<>();
 
-    private Map<String, AbstractEntityHolder> holdersMap;
+    private Map<String, T> holdersMap;
 
     private String eventBusName;
 
@@ -57,7 +57,7 @@ public class EventBus<T extends AbstractEntityHolder> {
         }
 
         this.eventBusName = eventBusName;
-        holders.put(eventBusName, new LinkedHashMap<String, AbstractEntityHolder>());
+        holders.put(eventBusName, new LinkedHashMap<String, EntityHolder>());
         holdersMap = new HashMap<>();
 
         LOGGER.info("EventBus registered: " + eventBusName);
@@ -67,7 +67,7 @@ public class EventBus<T extends AbstractEntityHolder> {
         buses.put(eventBusName, this);
     }
 
-    public void register(final AbstractEntityHolder holder) {
+    public void register(final T holder) {
 
         if(holdersMap.containsKey(holder.getType())) {
             LOGGER.severe("EventBus: " + eventBusName + " registration failed, holder already defined.");
@@ -79,7 +79,7 @@ public class EventBus<T extends AbstractEntityHolder> {
         List<String> events = holder.events();
         if(events != null && events.size() > 0) {
             for(String event: events) {
-                List<AbstractEntityHolder> hs = new ArrayList<>();
+                List<EntityHolder> hs = new ArrayList<>();
                 if(eventsMap.containsKey(event)) {
                     hs = eventsMap.get(event);
                 }
@@ -108,7 +108,7 @@ public class EventBus<T extends AbstractEntityHolder> {
      * Updates the holder and keeps its order in the queue.
      * @param holder - instance of {@link AbstractEntityHolder}
      */
-    public void update(final AbstractEntityHolder holder) {
+    public void update(final T holder) {
         if(holder == null || holder.getType() == null || holder.getType().length() == 0) {
             LOGGER.severe("EventBus: " + eventBusName + " update failed, holder is not defined.");
             return;
@@ -122,7 +122,7 @@ public class EventBus<T extends AbstractEntityHolder> {
         LOGGER.info("EventBus: " + eventBusName + " holder updated: " + holder.getType());
     }
 
-    public void unregister(AbstractEntityHolder holder) {
+    public void unregister(T holder) {
         if(holder == null || holder.getType() == null || holder.getType().length() == 0) {
             LOGGER.severe("EventBus: " + eventBusName + " update failed, holder is not defined.");
             return;
@@ -138,9 +138,9 @@ public class EventBus<T extends AbstractEntityHolder> {
         holdersMap.remove(holder.getType());
         LOGGER.info("EventBusName: " + eventBusName + " holder unregistered: " + holder);
 
-        Iterator<Map.Entry<String, List<AbstractEntityHolder>>> iter = eventsMap.entrySet().iterator();
+        Iterator<Map.Entry<String, List<EntityHolder>>> iter = eventsMap.entrySet().iterator();
         while(iter.hasNext()) {
-            Map.Entry<String, List<AbstractEntityHolder>> entry = iter.next();
+            Map.Entry<String, List<EntityHolder>> entry = iter.next();
             if(entry.getValue().contains(holder)) {
                 entry.getValue().remove(holder);
             }
@@ -150,19 +150,20 @@ public class EventBus<T extends AbstractEntityHolder> {
         }
     }
 
-    public Map<String, AbstractEntityHolder> getHolders() {
-        return getHolders(eventBusName);
+    public Map<String, T> getHolders() {
+        //noinspection unchecked
+        return (Map<String, T>) getHolders(eventBusName);
     }
 
-    public static Map<String, AbstractEntityHolder> getHolders(String eventBusName) {
+    public static Map<String, ? extends EntityHolder> getHolders(String eventBusName) {
         return holders.get(eventBusName);
     }
 
-    public List<AbstractEntityHolder> getHoldersList() {
+    public List<EntityHolder> getHoldersList() {
         return getHoldersList(eventBusName);
     }
 
-    public static List<AbstractEntityHolder> getHoldersList(String eventBusName) {
+    public static List<EntityHolder> getHoldersList(String eventBusName) {
         return new ArrayList<>(holders.get(eventBusName).values());
     }
 
@@ -217,7 +218,7 @@ public class EventBus<T extends AbstractEntityHolder> {
             @Override
             public void run() {
                 LOGGER.fine("EventBusName: " + eventBusName + ", starting postSync for eventName: " + eventName + ", eventObject: " + eventObject);
-                for (Map.Entry<String, AbstractEntityHolder> entry : holders.get(eventBusName).entrySet()) {
+                for (Map.Entry<String, ? extends EntityHolder> entry : holders.get(eventBusName).entrySet()) {
                     try {
                         if(eventsMap.containsKey(eventName) && !eventsMap.get(eventName).contains(entry.getValue())) {
                             LOGGER.fine("EventBusName: " + eventBusName + " skips holder: " + entry.getValue() + ", eventName: " + eventName + " because of holder was not adjusted for this event.");
@@ -241,7 +242,7 @@ public class EventBus<T extends AbstractEntityHolder> {
      * @param eventObject - any object that will be sent together with event name
      */
     public static void postAll(String eventName, Object eventObject) {
-        for(Map.Entry<String,Map<String, AbstractEntityHolder>> x: holders.entrySet()) {
+        for(Map.Entry<String, Map<String, EntityHolder>> x: holders.entrySet()) {
             post(x.getKey(), eventName, eventObject);
         }
     }
@@ -255,7 +256,7 @@ public class EventBus<T extends AbstractEntityHolder> {
      * @param runnable - redefine runnable
      */
     public static void postAll(Runnable runnable) {
-        for(Map.Entry<String,Map<String, AbstractEntityHolder>> x: holders.entrySet()) {
+        for(Map.Entry<String, Map<String, EntityHolder>> x: holders.entrySet()) {
             postRunnable(x.getKey(), runnable);
         }
     }
@@ -264,11 +265,11 @@ public class EventBus<T extends AbstractEntityHolder> {
      * Will call holder.finish() on each holder before clear eventBus.
      */
     public void clear() {
-        for(Map.Entry<String, AbstractEntityHolder> holder: holders.get(eventBusName).entrySet()) {
+        for(Map.Entry<String, ? extends EntityHolder> holder: holders.get(eventBusName).entrySet()) {
             holder.getValue().finish();
-            Iterator<Map.Entry<String, List<AbstractEntityHolder>>> iter = eventsMap.entrySet().iterator();
+            Iterator<Map.Entry<String, List<EntityHolder>>> iter = eventsMap.entrySet().iterator();
             while(iter.hasNext()) {
-                Map.Entry<String, List<AbstractEntityHolder>> entry = iter.next();
+                Map.Entry<String, List<EntityHolder>> entry = iter.next();
                 if(entry.getValue().contains(holder.getValue())) {
                     entry.getValue().remove(holder.getValue());
                 }
@@ -331,7 +332,7 @@ public class EventBus<T extends AbstractEntityHolder> {
         }
     }
 
-    public AbstractEntityHolder getHolder(String type) {
+    public EntityHolder getHolder(String type) {
         if(holdersMap.containsKey(type)) return holdersMap.get(type);
         return null;
     }
