@@ -1,1 +1,8 @@
+title: Edeqa's EventBus
+description: A simple event bus with Android support
+show_downloads: true
 theme: jekyll-theme-slate
+
+gems:
+  - jekyll-mentions
+  - jekyll-readme-index
