@@ -106,7 +106,7 @@ public class EventBus<T extends EntityHolder> {
 
     /**
      * Updates the holder and keeps its order in the queue.
-     * @param holder - instance of {@link AbstractEntityHolder}
+     * @param holder instance of {@link AbstractEntityHolder}
      */
     public void update(final T holder) {
         if(holder == null || holder.getType() == null || holder.getType().length() == 0) {
@@ -191,7 +191,7 @@ public class EventBus<T extends EntityHolder> {
 
     /**
      * Will post runnable in the same queue with events.
-     * @param runnable - redefine runnable
+     * @param runnable redefine {@link Runnable}
      */
     public void postRunnable(Runnable runnable) {
         postRunnable(eventBusName, runnable);
@@ -199,8 +199,8 @@ public class EventBus<T extends EntityHolder> {
 
     /**
      * Will post runnable in the queue same with events.
-     * @param eventBusName - name of target event bus
-     * @param runnable - redefine runnable
+     * @param eventBusName name of target event bus
+     * @param runnable redefine {@link Runnable}
      */
     public static void postRunnable(String eventBusName, Runnable runnable) {
         LOGGER.fine("EventBusName: " + eventBusName + ", starting runnable: " + runnable);
@@ -209,9 +209,9 @@ public class EventBus<T extends EntityHolder> {
 
     /**
      * The main events poster.
-     * @param eventBusName - a target event bus
-     * @param eventName - any not empty event name, i.e. "event1"
-     * @param eventObject - any object that will be sent together with event name
+     * @param eventBusName a target event bus
+     * @param eventName any not empty event name, i.e. "event1"
+     * @param eventObject any object that will be sent together with event name
      */
     public static void postSync(final String eventBusName, final String eventName, final Object eventObject) {
         runners.get(eventBusName).post(new Runnable() {
@@ -238,8 +238,8 @@ public class EventBus<T extends EntityHolder> {
 
     /**
      * Will post event/object to each holder in eventBus entirely.
-     * @param eventName - any not empty event name, i.e. "event1"
-     * @param eventObject - any object that will be sent together with event name
+     * @param eventName any not empty event name, i.e. "event1"
+     * @param eventObject any object that will be sent together with event name
      */
     public static void postAll(String eventName, Object eventObject) {
         for(Map.Entry<String, Map<String, EntityHolder>> x: holders.entrySet()) {
@@ -253,7 +253,7 @@ public class EventBus<T extends EntityHolder> {
 
     /**
      * Will post runnable to each holder in eventBus entirely using the same queue as events.
-     * @param runnable - redefine runnable
+     * @param runnable redefine {@link Runnable}
      */
     public static void postAll(Runnable runnable) {
         for(Map.Entry<String, Map<String, EntityHolder>> x: holders.entrySet()) {
@@ -297,7 +297,7 @@ public class EventBus<T extends EntityHolder> {
     /**
      * Changes the runner for event bus. Redefine the runner if you want to send events to android
      * main thread. See details https://github.com/edeqa/eventbus
-     * @param runner - {@link Runner}
+     * @param runner {@link Runner}, default value is RUNNER_DEFAULT
      */
     public void setRunner(Runner runner) {
         runners.put(eventBusName, runner);
@@ -322,7 +322,7 @@ public class EventBus<T extends EntityHolder> {
 
     /**
      * Redefines the default runner and overrides runners in all existing buses.
-     * @param runner - {@link Runner}
+     * @param runner {@link Runner}, default value is RUNNER_DEFAULT
      */
     public static void setMainRunner(Runner runner) {
         EventBus.RUNNER_DEFAULT = runner;
@@ -339,7 +339,7 @@ public class EventBus<T extends EntityHolder> {
 
     /**
      * Provides the possibility for deep inspection of event specified.
-     * @param eventName - any not empty event name, i.e. "event1"
+     * @param eventName any not empty event name, i.e. "event1"
      */
     public static void inspect(String eventName) {
         LOGGER.warning("EventBus sets event for deep inspection: " + eventName);

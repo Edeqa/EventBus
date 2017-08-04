@@ -56,7 +56,7 @@ abstract public class AbstractEntityHolder<T> implements EntityHolder<T> {
     public void finish() {}
 
     /**
-     * Exports events this holder processes especially. Events will be posted directly to this holder
+     * Exports events of this holder for process especially. Events will be posted directly to this holder
      * (and possible other holders which define the same events) and won't spreaded to others.
      * @return list of event names can be performed only with this holder.
      */

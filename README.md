@@ -174,6 +174,10 @@ Deep inspection for specific events can be set next way:
     
 This will throw the stacktrace when these events happen.
 
+## Javadoc
+
+See the [Javadoc](https://edeqa.github.io/EventBus/javadoc/) for more details about the API.
+
 ## History
 
 0.7 - refactoring to interface; fixes;
