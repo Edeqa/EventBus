@@ -1,7 +1,7 @@
 title: Edeqa EventBus
 description: A simple event bus with Android support
 show_downloads: true
-theme: jekyll-theme-slate
+theme: jekyll-theme-cayman
 google_analytics: UA-104070698-1
 
 gems:
