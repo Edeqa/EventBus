@@ -4,5 +4,11 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
 
+task javaDoc (type: Javadoc) {
+    source = sourceSets.main.allJava
+    classpath += configurations.compile
+    destinationDir = file("${projectDir}/src/javadoc")
+}
+
 sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
