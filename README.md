@@ -180,7 +180,9 @@ See the [Javadoc](https://edeqa.github.io/EventBus/javadoc/) for more details ab
 
 ## History
 
-0.7 - refactoring to interface; fixes;
+0.8 - javadoc
+
+0.7 - refactoring to interface; fixes
 
 0.6 - eventBus#postRunnable; docs; fixes
 
