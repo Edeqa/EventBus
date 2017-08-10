@@ -105,6 +105,18 @@ public class EventBus<T extends EntityHolder> {
     }
 
     /**
+     * Registers the holder in event bus or update it if it already exists.
+     * @param holder instance of {@link AbstractEntityHolder}
+     */
+    public void registerOrUpdate(T holder) {
+        if(holders.get(eventBusName).containsKey(holder.getType())) {
+            update(holder);
+        } else {
+            register(holder);
+        }
+    }
+
+    /**
      * Updates the holder and keeps its order in the queue.
      * @param holder instance of {@link AbstractEntityHolder}
      */
