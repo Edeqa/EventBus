@@ -105,11 +105,11 @@ public class EventBus<T extends EntityHolder> {
     }
 
     /**
-     * Registers the holder in event bus or update it if it already exists.
-     * @param holder instance of {@link AbstractEntityHolder}
+     * Registers the holder in event bus or updates it if it already exists.
+     * @param holder must implement {@link EntityHolder}, may be an instance of {@link AbstractEntityHolder}
      */
     public void registerOrUpdate(T holder) {
-        if(holders.get(eventBusName).containsKey(holder.getType())) {
+        if(getHolder(holder.getType()) != null) {
             update(holder);
         } else {
             register(holder);
@@ -118,7 +118,7 @@ public class EventBus<T extends EntityHolder> {
 
     /**
      * Updates the holder and keeps its order in the queue.
-     * @param holder instance of {@link AbstractEntityHolder}
+     * @param holder must implement {@link EntityHolder}, may be an instance of {@link AbstractEntityHolder}
      */
     public void update(final T holder) {
         if(holder == null || holder.getType() == null || holder.getType().length() == 0) {
