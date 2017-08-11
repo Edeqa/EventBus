@@ -109,7 +109,7 @@ public class EventBus<T extends EntityHolder> {
      * @param holder instance of {@link AbstractEntityHolder}
      */
     public void registerOrUpdate(T holder) {
-        if(holders.get(eventBusName).containsKey(holder.getType())) {
+        if(getHolder(holder.getType()) != null) {
             update(holder);
         } else {
             register(holder);
