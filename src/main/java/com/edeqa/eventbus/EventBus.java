@@ -75,6 +75,7 @@ public class EventBus<T extends EntityHolder> {
         }
         holder.setLoggingLevel(LOGGING_LEVEL);
 
+
         //noinspection unchecked
         List<String> events = holder.events();
         if(events != null && events.size() > 0) {
@@ -102,6 +103,7 @@ public class EventBus<T extends EntityHolder> {
                 }
             }
         });
+        LOGGER.info("EventBus: " + eventBusName + " holder registered: " + holder.getType());
     }
 
     /**
@@ -134,9 +136,17 @@ public class EventBus<T extends EntityHolder> {
         LOGGER.info("EventBus: " + eventBusName + " holder updated: " + holder.getType());
     }
 
+    public void unregister(String type) {
+        if(holdersMap.containsKey(type)) {
+            unregister(holdersMap.get(type));
+        } else {
+            LOGGER.severe("EventBus: " + eventBusName + " unregister failed, holder not found: " + type);
+        }
+    }
+
     public void unregister(T holder) {
         if(holder == null || holder.getType() == null || holder.getType().length() == 0) {
-            LOGGER.severe("EventBus: " + eventBusName + " update failed, holder is not defined.");
+            LOGGER.severe("EventBus: " + eventBusName + " unregister failed, holder is not defined.");
             return;
         }
         try {

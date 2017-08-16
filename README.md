@@ -180,7 +180,7 @@ See the [Javadoc](https://edeqa.github.io/EventBus/javadoc/) for more details ab
 
 ## History
 
-0.8 - eventBus#registerOrUpdate; javadoc
+0.8 - eventBus#registerOrUpdate; eventBus#unregister(String); javadoc
 
 0.7 - refactoring to interface; fixes
 
