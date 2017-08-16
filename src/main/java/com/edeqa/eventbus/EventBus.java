@@ -138,7 +138,29 @@ public class EventBus<T extends EntityHolder> {
 
     public void unregister(String type) {
         if(holdersMap.containsKey(type)) {
-            unregister(holdersMap.get(type));
+            T holder = holdersMap.get(type);
+            if(holder.getType() != null && holder.getType().length() > 0) {
+                unregister(holder);
+            } else {
+                holders.get(eventBusName).remove(type);
+                holdersMap.remove(type);
+                LOGGER.info("EventBusName: " + eventBusName + " holder already unregistered: " + holder);
+                Iterator<Map.Entry<String, List<EntityHolder>>> iter = eventsMap.entrySet().iterator();
+                while(iter.hasNext()) {
+                    Map.Entry<String, List<EntityHolder>> entry = iter.next();
+                    List<EntityHolder> list = entry.getValue();
+                    Iterator<EntityHolder> iterList = list.iterator();
+                    while(iterList.hasNext()) {
+                        EntityHolder item = iterList.next();
+                        if(item == holder) {
+                            iterList.remove();
+                        }
+                    }
+                    if(list.isEmpty()) {
+                        iter.remove();
+                    }
+                }
+            }
         } else {
             LOGGER.severe("EventBus: " + eventBusName + " unregister failed, holder not found: " + type);
         }
