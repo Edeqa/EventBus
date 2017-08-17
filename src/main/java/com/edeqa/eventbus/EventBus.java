@@ -29,21 +29,16 @@ public class EventBus<T extends EntityHolder> {
 
     private final static Logger LOGGER = Logger.getLogger(EventBus.class.getName());
 
+    private static ExecutorService executor = Executors.newSingleThreadExecutor();
     private static Map<String, Map<String, EntityHolder>> holders = new LinkedHashMap<>();
-
     private static Map<String, Runner> runners = new HashMap<>();
-
     private static Map<String, List<EntityHolder>> eventsMap = new LinkedHashMap<>();
+    private static Map<String, EventBus> buses = new HashMap<>();
+    private static List<String> inspect = new ArrayList<>();
 
     private Map<String, T> holdersMap;
-
     private String eventBusName;
 
-    private static Map<String, EventBus> buses = new HashMap<>();
-
-    private static ExecutorService executor = Executors.newSingleThreadExecutor();
-
-    private static List<String> inspect = new ArrayList<>();
 
     public EventBus() throws TooManyListenersException {
         this(DEFAULT_NAME);
@@ -74,7 +69,6 @@ public class EventBus<T extends EntityHolder> {
             return;
         }
         holder.setLoggingLevel(LOGGING_LEVEL);
-
 
         //noinspection unchecked
         List<String> events = holder.events();

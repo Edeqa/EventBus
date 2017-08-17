@@ -44,13 +44,13 @@ abstract public class AbstractEntityHolder<T> implements EntityHolder<T> {
     }
 
     /**
-     * Will call after holder was registered.
+     * Will call after holder registration.
      */
     @Override
     public void start() {}
 
     /**
-     * Will call before holder will be unregistered.
+     * Will call before holder should be unregistered.
      */
     @Override
     public void finish() {}

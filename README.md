@@ -19,7 +19,7 @@ Step 1. Add the JitPack repository in your root build.gradle at the end of repos
 Step 2. Add the dependency in the app's build.gradle:
 
     dependencies {
-        compile 'com.github.edeqa:eventbus:0.7'
+        compile 'com.github.edeqa:eventbus:0.9'
     }
 
 ### Maven
@@ -38,7 +38,7 @@ Step 2. Add the dependency:
     <dependency>
         <groupId>com.github.edeqa</groupId>
         <artifactId>eventbus</artifactId>
-        <version>0.7</version>
+        <version>0.9</version>
     </dependency>
 
 ## How to use
@@ -179,6 +179,8 @@ This will throw the stacktrace when these events happen.
 See the [Javadoc](https://edeqa.github.io/EventBus/javadoc/) for more details about the API.
 
 ## History
+
+0.9 - fixes
 
 0.8 - eventBus#registerOrUpdate; eventBus#unregister(String); javadoc
 
