@@ -101,10 +101,6 @@ Post event to all registered buses:
 
 Event will be posted to all holders in the order that holders were registered.
 
-You can use `fire` instead of `post` - it's a synonym:
-
-    eventBus.fire("event1");
-
 ### Random task in the queue
 
 If you want to run some specific task in the same queue as events then use `post#Runnable`:
