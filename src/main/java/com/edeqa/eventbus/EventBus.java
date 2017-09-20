@@ -198,9 +198,9 @@ public class EventBus<T extends EntityHolder> {
         }
     }
 
-    public Map<String, ? extends EntityHolder> getHolders() {
+    public Map<String, T> getHolders() {
         //noinspection unchecked
-        return getHolders(eventBusName);
+        return (Map<String, T>) getHolders(eventBusName);
     }
 
     public static List<EventBus> getEventBuses() {
