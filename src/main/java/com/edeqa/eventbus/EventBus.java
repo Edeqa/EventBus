@@ -9,7 +9,6 @@
 package com.edeqa.eventbus;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -30,12 +29,13 @@ public class EventBus<T extends EntityHolder> {
     private final static Logger LOGGER = Logger.getLogger(EventBus.class.getName());
 
     private static ExecutorService executor = Executors.newSingleThreadExecutor();
+
+    private static Map<String, EventBus> buses = new LinkedHashMap<>();
     private static Map<String, Map<String, EntityHolder>> holders = new LinkedHashMap<>();
-    private static Map<String, Runner> runners = new HashMap<>();
     private static Map<String, List<EntityHolder>> eventsMap = new LinkedHashMap<>();
-    private static Map<String, EventBus> buses = new HashMap<>();
     private static List<String> inspect = new ArrayList<>();
 
+    private Runner runner;
     private Map<String, T> holdersMap;
     private String eventBusName;
 
@@ -53,7 +53,7 @@ public class EventBus<T extends EntityHolder> {
 
         this.eventBusName = eventBusName;
         holders.put(eventBusName, new LinkedHashMap<String, EntityHolder>());
-        holdersMap = new HashMap<>();
+        holdersMap = new LinkedHashMap<>();
 
         LOGGER.info("EventBus registered: " + eventBusName);
 
@@ -86,7 +86,7 @@ public class EventBus<T extends EntityHolder> {
 
         holdersMap.put(holder.getType(), holder);
         holders.get(eventBusName).put(holder.getType(), holder);
-        runners.get(eventBusName).post(new Runnable() {
+        runner.post(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -133,7 +133,7 @@ public class EventBus<T extends EntityHolder> {
     public void unregister(String type) {
         if(holdersMap.containsKey(type)) {
             T holder = holdersMap.get(type);
-            if(holder.getType() != null && holder.getType().length() > 0) {
+            if(holder != null && holder.getType() != null && holder.getType().length() > 0) {
                 unregister(holder);
             } else {
                 holders.get(eventBusName).remove(type);
@@ -160,13 +160,23 @@ public class EventBus<T extends EntityHolder> {
         }
     }
 
-    public void unregister(T holder) {
+    public void unregister(final T holder) {
         if(holder == null || holder.getType() == null || holder.getType().length() == 0) {
             LOGGER.severe("EventBus: " + eventBusName + " unregister failed, holder is not defined.");
             return;
         }
         try {
-            holder.finish();
+            runner.post(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        holder.finish();
+                    } catch (Exception e) {
+                        LOGGER.severe("with eventBusName '" + eventBusName + "' and holder " + holder);
+                        e.printStackTrace();
+                    }
+                }
+            });
             LOGGER.info("EventBusName: " + eventBusName + " holder finished: " + holder);
         } catch (Exception e) {
             LOGGER.severe("EventBusName: " + eventBusName + " unregister failed for holder: " + holder);
@@ -188,9 +198,33 @@ public class EventBus<T extends EntityHolder> {
         }
     }
 
-    public Map<String, T> getHolders() {
+    public Map<String, ? extends EntityHolder> getHolders() {
         //noinspection unchecked
-        return (Map<String, T>) getHolders(eventBusName);
+        return getHolders(eventBusName);
+    }
+
+    public static List<EventBus> getEventBuses() {
+        return new ArrayList<>(buses.values());
+    }
+
+    public static EventBus getEventBus(String eventBusName) {
+        return buses.get(eventBusName);
+    }
+
+    public static EventBus getOrCreateEventBus() throws TooManyListenersException {
+        if(buses.containsKey(DEFAULT_NAME)) {
+            return buses.get(DEFAULT_NAME);
+        } else {
+            return new EventBus();
+        }
+    }
+
+    public static EventBus getOrCreateEventBus(String eventBusName) throws TooManyListenersException {
+        if(buses.containsKey(eventBusName)) {
+            return buses.get(eventBusName);
+        } else {
+            return new EventBus(eventBusName);
+        }
     }
 
     public static Map<String, ? extends EntityHolder> getHolders(String eventBusName) {
@@ -209,9 +243,9 @@ public class EventBus<T extends EntityHolder> {
         post(eventName, null);
     }
 
-    public void post(Runnable runnable) {
-        post(eventBusName, runnable);
-    }
+//    public void post(Runnable runnable) {
+//        post(eventBusName, runnable);
+//    }
 
     public void post(String eventName, Object eventObject) {
         post(eventBusName, eventName, eventObject);
@@ -242,7 +276,7 @@ public class EventBus<T extends EntityHolder> {
      */
     public static void postRunnable(String eventBusName, Runnable runnable) {
         LOGGER.fine("EventBusName: " + eventBusName + ", starting runnable: " + runnable);
-        runners.get(eventBusName).post(runnable);
+        buses.get(eventBusName).getRunner().post(runnable);
     }
 
     /**
@@ -252,7 +286,7 @@ public class EventBus<T extends EntityHolder> {
      * @param eventObject any object that will be sent together with event name
      */
     public static void postSync(final String eventBusName, final String eventName, final Object eventObject) {
-        runners.get(eventBusName).post(new Runnable() {
+        buses.get(eventBusName).getRunner().post(new Runnable() {
             @Override
             public void run() {
                 LOGGER.fine("EventBusName: " + eventBusName + ", starting postSync for eventName: " + eventName + ", eventObject: " + eventObject);
@@ -303,20 +337,37 @@ public class EventBus<T extends EntityHolder> {
      * Will call holder.finish() on each holder before clear eventBus.
      */
     public void clear() {
-        for(Map.Entry<String, ? extends EntityHolder> holder: holders.get(eventBusName).entrySet()) {
-            holder.getValue().finish();
+        Iterator<Map.Entry<String, T>> entries = holdersMap.entrySet().iterator();
+        while(entries.hasNext()) {
+            Map.Entry<String, T> holderEntry = entries.next();
+            final T holder = holderEntry.getValue();
+            entries.remove();
+            holders.get(eventBusName).remove(holderEntry.getKey());
+
             Iterator<Map.Entry<String, List<EntityHolder>>> iter = eventsMap.entrySet().iterator();
             while(iter.hasNext()) {
                 Map.Entry<String, List<EntityHolder>> entry = iter.next();
-                if(entry.getValue().contains(holder.getValue())) {
-                    entry.getValue().remove(holder.getValue());
+                if(entry.getValue().contains(holderEntry.getValue())) {
+                    entry.getValue().remove(holderEntry.getValue());
                 }
                 if(entry.getValue().size() == 0) {
                     iter.remove();
                 }
             }
+            runner.post(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        holder.finish();
+                    } catch (Exception e) {
+                        LOGGER.severe("with eventBusName '" + eventBusName + "' and holder " + holder);
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
-        holdersMap.clear();
+//        holders.get(eventBusName).clear();
+//        holdersMap.clear();
         LOGGER.info("EventBus: " + eventBusName + " has been cleared.");
     }
 
@@ -327,7 +378,7 @@ public class EventBus<T extends EntityHolder> {
         for(Map.Entry<String,EventBus> bus: buses.entrySet()) {
             bus.getValue().clear();
         }
-        holders.clear();
+//        holders.clear();
         eventsMap.clear();
         LOGGER.info("EventBus: all buses have been cleared.");
     }
@@ -338,7 +389,7 @@ public class EventBus<T extends EntityHolder> {
      * @param runner {@link Runner}, default value is RUNNER_DEFAULT
      */
     public void setRunner(Runner runner) {
-        runners.put(eventBusName, runner);
+        this.runner = runner;
         LOGGER.config("EventBus: " + eventBusName + " set runner: " + runner);
     }
 
@@ -365,8 +416,8 @@ public class EventBus<T extends EntityHolder> {
     public static void setMainRunner(Runner runner) {
         EventBus.RUNNER_DEFAULT = runner;
         LOGGER.config("EventBus overrides main runner: " + runner);
-        for(Map.Entry<String,Runner> entry: runners.entrySet()) {
-            runners.put(entry.getKey(), runner);
+        for(Map.Entry<String,EventBus> entry: buses.entrySet()) {
+            buses.get(entry.getKey()).setRunner(runner);
         }
     }
 
@@ -380,8 +431,20 @@ public class EventBus<T extends EntityHolder> {
      * @param eventName any not empty event name, i.e. "event1"
      */
     public static void inspect(String eventName) {
-        LOGGER.warning("EventBus sets event for deep inspection: " + eventName);
-        inspect.add(eventName);
+        if(eventName != null) {
+            LOGGER.warning("EventBus sets event for deep inspection: " + eventName);
+            inspect.add(eventName);
+        } else {
+            LOGGER.warning("EventBus clears inspection events");
+            inspect.clear();
+        }
     }
 
+    public Runner getRunner() {
+        return runner;
+    }
+
+    public String getEventBusName() {
+        return eventBusName;
+    }
 }
