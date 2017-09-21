@@ -27,6 +27,11 @@ public class AbstractEntityHolderTest {
     }
 
     @Test
+    public void constructor() throws Exception {
+        System.out.println(holder.toString());
+    }
+
+    @Test
     public void setContext() throws Exception {
         holder.setContext(context2);
     }
