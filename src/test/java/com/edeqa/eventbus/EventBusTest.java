@@ -8,7 +8,6 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TooManyListenersException;
@@ -380,7 +379,7 @@ public class EventBusTest {
 
     @Test
     public void setRunner() throws Exception {
-        eventBus1.setRunner(EventBus.RUNNER_DEFAULT);
+        eventBus1.setRunner(EventBus.DEFAULT_RUNNER);
         eventBus1.post(PRINT_HOLDER_NAME);
         synchronized (context2) {
             context2.wait();
@@ -389,7 +388,7 @@ public class EventBusTest {
 
     @Test
     public void setMainRunner() throws Exception {
-        EventBus.setMainRunner(EventBus.RUNNER_DEFAULT);
+        EventBus.setMainRunner(EventBus.DEFAULT_RUNNER);
         eventBus1.post(PRINT_HOLDER_NAME);
         synchronized (context2) {
             context2.wait();

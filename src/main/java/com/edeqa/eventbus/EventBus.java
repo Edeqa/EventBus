@@ -27,7 +27,7 @@ public class EventBus<T extends EntityHolder> {
 
     public static Level LOGGING_LEVEL = Level.WARNING;
 
-    public static final Runner RUNNER_DEFAULT = new Runner() {
+    public static final Runner DEFAULT_RUNNER = new Runner() {
         @Override
         public void post(final Runnable runnable) {
             executor.submit(new Runnable() {
@@ -42,7 +42,7 @@ public class EventBus<T extends EntityHolder> {
     private final static Logger LOGGER = Logger.getLogger(EventBus.class.getName());
 
     private static ExecutorService executor = Executors.newSingleThreadExecutor();
-    private static Runner runnerDefault = RUNNER_DEFAULT;
+    private static Runner runnerDefault = DEFAULT_RUNNER;
 
     private static Map<String, EventBus<? extends EntityHolder>> buses = new LinkedHashMap<>();
     private static List<String> inspect = new ArrayList<>();
@@ -409,7 +409,7 @@ public class EventBus<T extends EntityHolder> {
     /**
      * Changes the runner for event bus. Redefine the runner if you want to send events to android
      * main thread. See details https://github.com/edeqa/eventbus
-     * @param runner {@link Runner}, default value is {@link EventBus#RUNNER_DEFAULT}.
+     * @param runner {@link Runner}, default value is {@link EventBus#DEFAULT_RUNNER}.
      */
     public void setRunner(Runner runner) {
         this.runner = runner;
@@ -422,7 +422,7 @@ public class EventBus<T extends EntityHolder> {
 
     /**
      * Redefines the default runner and overrides runners in all existing buses.
-     * @param runner {@link Runner}, default value is {@link EventBus#RUNNER_DEFAULT}.
+     * @param runner {@link Runner}, default value is {@link EventBus#DEFAULT_RUNNER}.
      */
     public static void setMainRunner(Runner runner) {
         EventBus.runnerDefault = runner;
