@@ -8,8 +8,10 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TooManyListenersException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -24,14 +26,19 @@ import static org.junit.Assert.assertEquals;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class EventBusTest {
 
-    private String context1;
-    private StringBuffer context2;
-    private StringBuilder context3;
+    private final static String TEST_EVENT2 = "test_event2";
+    private final static String TEST_EVENT_ERROR = "test_event_error";
+
+    private final String context1 = "1";
+    private final String context2 = "2";
+    private final String context3 = "3";
+    private final String context4 = "4";
     private EventBus eventBus1;
     private EventBus eventBus2;
     private SampleHolder holder1;
     private SampleHolder2 holder2;
     private SampleHolder3 holder3;
+    private SampleHolder4 holder4;
 
     private static ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
@@ -53,13 +60,14 @@ public class EventBusTest {
 
         EventBus.setMainRunner(runner);
 
-        context1 = new String();
-        context2 = new StringBuffer();
-        context3 = new StringBuilder();
-
         holder1 = new SampleHolder(context1);
         holder2 = new SampleHolder2(context2);
         holder3 = new SampleHolder3(context3);
+        holder4 = new SampleHolder4(context4);
+
+        if(EventBus.getEventBus(EventBus.DEFAULT_NAME) == null) {
+            eventBus1 = new EventBus<>();
+        }
 
         eventBus1 = EventBus.getOrCreateEventBus();
         eventBus2 = EventBus.getOrCreateEventBus("second");
@@ -109,11 +117,29 @@ public class EventBusTest {
 
     @Test
     public void register() throws Exception {
+
         eventBus1.register(holder3);
         synchronized (context3) {
             context3.wait();
         }
         assertEquals(3, eventBus1.getHoldersList().size());
+
+        eventBus1.register(holder3);
+        assertEquals(3, eventBus1.getHoldersList().size());
+
+        eventBus1.register(null);
+        assertEquals(3, eventBus1.getHoldersList().size());
+
+        EventBus eventBus = null;
+        try {
+            eventBus = new EventBus("second");
+        } catch (TooManyListenersException e) {
+            e.printStackTrace();
+        }
+        assertEquals(null, eventBus);
+
+        eventBus1.register(holder4);
+        assertEquals(4, eventBus1.getHoldersList().size());
     }
 
     @Test
@@ -129,10 +155,16 @@ public class EventBusTest {
 
     @Test
     public void update() throws Exception {
-        holder1.setContext(context2);
-        eventBus1.update(holder1);
+        eventBus1.update(null);
+        assertEquals(2, eventBus1.getHoldersList().size());
 
-        assertEquals(true, false);
+        holder1 = new SampleHolder(context2);
+        eventBus1.update(holder1);
+        assertEquals(2, eventBus1.getHoldersList().size());
+
+        eventBus1.update(holder3);
+        assertEquals(2, eventBus1.getHoldersList().size());
+
     }
 
     @Test
@@ -143,16 +175,28 @@ public class EventBusTest {
         }
         assertEquals(1, eventBus1.getHoldersList().size());
 
-        eventBus2.unregister(holder2.getType());
-        synchronized (context2) {
-            context2.wait();
+        eventBus2.unregister(holder1.getType());
+        synchronized (context1) {
+            context1.wait();
         }
+        assertEquals(2, eventBus2.getHoldersList().size());
+        eventBus2.unregister(holder1.getType());
         assertEquals(2, eventBus2.getHoldersList().size());
 
         assertEquals(1, eventBus1.getHoldersList().size());
-        eventBus1.getHolders().put(holder1.getType(), null);
         eventBus1.unregister(holder1.getType());
         assertEquals(0, eventBus1.getHoldersList().size());
+
+        assertEquals(0, eventBus1.getHoldersList().size());
+        eventBus1.register(holder4);
+        assertEquals(1, eventBus1.getHoldersList().size());
+
+        eventBus1.unregister(holder4);
+        assertEquals(0, eventBus1.getHoldersList().size());
+
+        assertEquals(2, eventBus2.getHoldersList().size());
+        eventBus2.unregister((EntityHolder) null);
+        assertEquals(2, eventBus2.getHoldersList().size());
 
     }
 
@@ -169,6 +213,10 @@ public class EventBusTest {
             context2.wait();
         }
         assertEquals(2, eventBus2.getHoldersList().size());
+
+        eventBus2.unregister(holder2);
+        assertEquals(2, eventBus2.getHoldersList().size());
+
     }
 
     @Test
@@ -239,11 +287,10 @@ public class EventBusTest {
 
     @Test
     public void postRunnable() throws Exception {
-        assertEquals(true, false);
-        /*eventBus1.postRunnable(new Runnable() {
+        eventBus1.postRunnable(new Runnable() {
             @Override
             public void run() {
-                assertEquals(true,false);
+                System.out.println("RUNNABLE");
                 synchronized (context3) {
                     context3.notify();
                 }
@@ -251,16 +298,15 @@ public class EventBusTest {
         });
         synchronized (context3) {
             context3.wait();
-        }*/
+        }
     }
 
     @Test
     public void postRunnable1() throws Exception {
-        assertEquals(true, false);
-/*eventBus1.postRunnable(new Runnable() {
+        EventBus.postRunnable(eventBus2.getEventBusName(), new Runnable() {
             @Override
             public void run() {
-                assertEquals(true,false);
+                System.out.println("RUNNABLE");
                 synchronized (context3) {
                     context3.notify();
                 }
@@ -268,7 +314,7 @@ public class EventBusTest {
         });
         synchronized (context3) {
             context3.wait();
-        }*/
+        }
     }
 
     @Test
@@ -297,11 +343,18 @@ public class EventBusTest {
 
     @Test
     public void postAll2() throws Exception {
-        assertEquals(true, false);
-        /*EventBus.postAll(runnable);
+        EventBus.postAll(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("RUNNABLE");
+                synchronized (context3) {
+                    context3.notify();
+                }
+            }
+        });
         synchronized (context3) {
             context3.wait();
-        }*/
+        }
     }
 
     @Test
@@ -327,12 +380,20 @@ public class EventBusTest {
 
     @Test
     public void setRunner() throws Exception {
-        eventBus1.setRunner(runner);
+        eventBus1.setRunner(EventBus.RUNNER_DEFAULT);
+        eventBus1.post(PRINT_HOLDER_NAME);
+        synchronized (context2) {
+            context2.wait();
+        }
     }
 
     @Test
     public void setMainRunner() throws Exception {
-        EventBus.setMainRunner(runner);
+        EventBus.setMainRunner(EventBus.RUNNER_DEFAULT);
+        eventBus1.post(PRINT_HOLDER_NAME);
+        synchronized (context2) {
+            context2.wait();
+        }
     }
 
     @Test
@@ -347,13 +408,10 @@ public class EventBusTest {
     @Test
     public void inspect() throws Exception {
         EventBus.inspect(PRINT_HOLDER_NAME);
+        EventBus.inspect(TEST_EVENT2);
         eventBus1.post(PRINT_HOLDER_NAME);
         synchronized (context2) {
             context2.wait();
-        }
-        eventBus2.post(PRINT_HOLDER_NAME);
-        synchronized (context3) {
-            context3.wait();
         }
         EventBus.inspect(null);
     }
@@ -368,7 +426,6 @@ public class EventBusTest {
         public List<String> events() {
             super.events();
             List<String> events = new ArrayList<>();
-            events.add(PRINT_HOLDER_NAME);
             return events;
         }
 
@@ -415,6 +472,26 @@ public class EventBusTest {
         public SampleHolder2(Object context) {
             super(context);
         }
+        @Override
+        public List<String> events() {
+            super.events();
+            List<String> events = new ArrayList<>();
+            events.add(TEST_EVENT2);
+            return events;
+        }
+        @Override
+        public boolean onEvent(String eventName, Object eventObject) {
+            switch(eventName) {
+                case TEST_EVENT2:
+                    assertEquals(null, eventObject);
+                    synchronized (context) {
+                        context.notify();
+                    }
+                    return false;
+            }
+            super.onEvent(eventName, eventObject);
+            return true;
+        }
     }
     public class SampleHolder3 extends SampleHolder {
         public SampleHolder3(Object context) {
@@ -422,9 +499,44 @@ public class EventBusTest {
         }
     }
 
+    public class SampleHolder4 extends SampleHolder {
+        String text;
+        public SampleHolder4(Object context) {
+            super(context);
+        }
+
+        @Override
+        public void start() {
+            super.start();
+            System.out.println(text.length());
+        }
+        @Override
+        public void finish() {
+            super.finish();
+            System.out.println(text.length());
+        }
+        @Override
+        public List<String> events() {
+            List<String> events = new ArrayList<>();
+            events.add(TEST_EVENT2);
+            events.add(TEST_EVENT_ERROR);
+            return events;
+        }
+        @Override
+        public boolean onEvent(String eventName, Object eventObject) {
+            switch(eventName) {
+                case TEST_EVENT_ERROR:
+                    System.out.println(text.length());
+                    return true;
+            }
+            super.onEvent(eventName, eventObject);
+            return true;
+        }
+    }
+
     @Test
     public void getEventBuses() throws Exception {
-        assertEquals(2, EventBus.getEventBuses().size());
+        assertEquals(2, EventBus.fetchEventBusesList().size());
     }
 
     @Test
@@ -441,7 +553,7 @@ public class EventBusTest {
     public void getOrCreateEventBus1() throws Exception {
         assertEquals("second", EventBus.getOrCreateEventBus("second").getEventBusName());
         assertEquals("third", EventBus.getOrCreateEventBus("third").getEventBusName());
-        assertEquals(3, EventBus.getEventBuses().size());
+        assertEquals(3, EventBus.fetchEventBusesList().size());
     }
 
     @Test
@@ -453,4 +565,49 @@ public class EventBusTest {
     public void getEventBusName() throws Exception {
         assertEquals(EventBus.DEFAULT_NAME,eventBus1.getEventBusName());
     }
+
+    @Test
+    public void fetchEventBusesList() throws Exception {
+        assertEquals(2,EventBus.fetchEventBusesList().size());
+    }
+
+    @Test
+    public void fetchHoldersList() throws Exception {
+        assertEquals(2,eventBus1.fetchHoldersList().size());
+        assertEquals(3,eventBus2.fetchHoldersList().size());
+
+    }
+
+    @Test
+    public void errors() throws Exception {
+        eventBus2.post(PRINT_HOLDER_NAME);
+        synchronized (context3) {
+            context3.wait();
+        }
+        eventBus1.post(TEST_EVENT2);
+        synchronized (context2) {
+            context2.wait();
+        }
+
+        eventBus2.register(holder4);
+        assertEquals(4, eventBus2.getHoldersList().size());
+
+        assertEquals(2, eventBus1.getHoldersList().size());
+        eventBus1.register(holder3);
+        synchronized (context3) {
+            context3.wait();
+        }
+        assertEquals(3, eventBus1.getHoldersList().size());
+
+        eventBus2.post(TEST_EVENT_ERROR);
+
+        assertEquals(4, eventBus2.getHoldersList().size());
+        eventBus2.unregister(holder3);
+        synchronized (context3) {
+            context3.wait();
+        }
+        assertEquals(3, eventBus2.getHoldersList().size());
+
+    }
+
 }

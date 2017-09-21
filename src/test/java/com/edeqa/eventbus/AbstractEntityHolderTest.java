@@ -14,7 +14,6 @@ import static org.junit.Assert.assertEquals;
  * Created 9/20/17.
  */
 public class AbstractEntityHolderTest {
-
     private Object context1;
     private Object context2;
     private SampleHolder holder;
@@ -95,5 +94,12 @@ public class AbstractEntityHolderTest {
             return true; // if returns false then chain will be interrupted
         }
     }
+
+    @Test
+    public void toStringTest() throws Exception {
+
+        assertEquals("EntityHolder{type=SampleHolder}", holder.toString());
+    }
+
 
 }

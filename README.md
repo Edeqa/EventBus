@@ -181,11 +181,11 @@ See the [Javadoc](https://edeqa.github.io/EventBus/javadoc/) for more details ab
 
 ## History
 
-1.0 - EventBus#getEventBuses; EventBus#getEventBus(String); EventBus#getOrCreateEventBus(String); tests; fixes
+1.0 - EventBus#getEventBuses; EventBus#getEventBus; EventBus#getOrCreateEventBus; eventBus#getEventBusName; tests; fixes
 
 0.9 - fixes
 
-0.8 - eventBus#registerOrUpdate; eventBus#unregister(String); javadoc
+0.8 - eventBus#registerOrUpdate; eventBus#unregister; javadoc
 
 0.7 - refactoring to interface; fixes
 

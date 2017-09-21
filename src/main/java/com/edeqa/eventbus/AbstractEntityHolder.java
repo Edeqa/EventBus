@@ -82,4 +82,10 @@ abstract public class AbstractEntityHolder<T> implements EntityHolder<T> {
         LOGGER.setLevel(loggingLevel);
     }
 
+    @Override
+    public String toString() {
+        return "EntityHolder{" +
+                "type=" + getType() +
+                '}';
+    }
 }
