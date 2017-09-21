@@ -91,13 +91,13 @@ public class EventBusTest {
     public void tearDown() throws Exception {
         System.out.println("<<< END TEST");
         if(eventBus1.getHoldersList().size() > 0) {
-            EventBus.clearAll();
+            eventBus1.clearAll();
             synchronized (context2) {
                 context2.wait();
             }
         }
         if(eventBus2.getHoldersList().size() > 0) {
-            EventBus.clearAll();
+            eventBus2.clearAll();
             synchronized (context3) {
                 context3.wait();
             }
