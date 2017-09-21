@@ -214,6 +214,7 @@ public class EventBus<T extends EntityHolder> {
 
     /**
      * Collects and returns list of all defined event buses.
+     * @return list of event buses
      */
     public static List<EventBus<? extends EntityHolder>> fetchEventBusesList() {
         return new ArrayList<>(buses.values());
@@ -438,6 +439,7 @@ public class EventBus<T extends EntityHolder> {
 
     /**
      * Collects and returns list of all holders registered in event bus.
+     * @return list of holders
      */
     public List<T> fetchHoldersList() {
         return new ArrayList<>(holders.values());

@@ -14,7 +14,7 @@ dependencies {
 task javaDoc (type: Javadoc) {
     source = sourceSets.main.allJava
     classpath += configurations.compile
-    destinationDir = file("${projectDir}/javadoc")
+    destinationDir = file("${projectDir}/docs")
 }
 
 sourceCompatibility = "1.7"
