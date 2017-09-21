@@ -7,3 +7,6 @@ google_analytics: UA-104070698-1
 gems:
   - jekyll-mentions
   - jekyll-readme-index
+
+exclude:
+  - README.md
