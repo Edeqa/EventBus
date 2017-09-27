@@ -181,7 +181,7 @@ See the [Javadoc](https://edeqa.github.io/EventBus/) for more details about the 
 
 ## History
 
-1.0 - EventBus#getEventBuses; EventBus#getEventBus; EventBus#getOrCreateEventBus; eventBus#getEventBusName; tests; fixes
+1.0 - EventBus#getEventBuses; EventBus#getEventBus; EventBus#getOrCreateEventBus; eventBus#getEventBusName; EventBus#setLoggingLevel; -EventBus#postSync; tests; fixes
 
 0.9 - fixes
 

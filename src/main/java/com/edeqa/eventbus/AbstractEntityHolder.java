@@ -33,7 +33,7 @@ abstract public class AbstractEntityHolder<T> implements EntityHolder<T> {
     }
 
     @Override
-    public void setContext(T context){
+    public void setContext(T context) {
         this.context = context;
     }
 
@@ -47,17 +47,20 @@ abstract public class AbstractEntityHolder<T> implements EntityHolder<T> {
      * Will call after holder registration.
      */
     @Override
-    public void start() {}
+    public void start() {
+    }
 
     /**
      * Will call before holder should be unregistered.
      */
     @Override
-    public void finish() {}
+    public void finish() {
+    }
 
     /**
      * Exports events of this holder for process especially. Events will be posted directly to this holder
      * (and possible other holders which define the same events) and won't spreaded to others.
+     *
      * @return list of event names can be performed only with this holder.
      */
     @Override
@@ -68,7 +71,7 @@ abstract public class AbstractEntityHolder<T> implements EntityHolder<T> {
     @Override
     public boolean onEvent(String eventName, Object eventObject) {
         LOGGER.info("onEvent performs with eventName: " + eventName + ", eventObject: " + eventObject); //NON-NLS
-        switch(eventName) {
+        switch (eventName) {
             case PRINT_HOLDER_NAME:
                 System.out.println("EntityHolder name: " + getType()); //NON-NLS
                 break;

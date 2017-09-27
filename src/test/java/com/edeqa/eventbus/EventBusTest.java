@@ -14,6 +14,7 @@ import java.util.TooManyListenersException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 import static com.edeqa.eventbus.AbstractEntityHolder.PRINT_HOLDER_NAME;
 import static org.junit.Assert.assertEquals;
@@ -317,14 +318,6 @@ public class EventBusTest {
     }
 
     @Test
-    public void postSync() throws Exception {
-        EventBus.postSync(eventBus1.getEventBusName(),"test_event", "test object");
-        synchronized (context2) {
-            context2.wait();
-        }
-    }
-
-    @Test
     public void postAll() throws Exception {
         EventBus.postAll(PRINT_HOLDER_NAME);
         synchronized (context3) {
@@ -607,6 +600,11 @@ public class EventBusTest {
         }
         assertEquals(3, eventBus2.getHoldersList().size());
 
+    }
+
+    @Test
+    public void setLoggingLevel() throws Exception {
+        EventBus.setLoggingLevel(Level.OFF);
     }
 
 }

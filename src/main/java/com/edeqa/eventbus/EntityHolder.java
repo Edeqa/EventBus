@@ -18,11 +18,11 @@ public interface EntityHolder<T> {
 
     String getType();
 
+    List<String> events();
+
     void start();
 
     void finish();
-
-    List<String> events();
 
     boolean onEvent(String eventName, Object eventObject);
 
