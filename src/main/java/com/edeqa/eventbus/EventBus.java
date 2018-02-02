@@ -8,6 +8,8 @@
 
 package com.edeqa.eventbus;
 
+import com.sun.istack.internal.NotNull;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -111,15 +113,20 @@ public class EventBus<T extends EntityHolder> {
         EventBus.loggingLevel = loggingLevel;
     }
 
-    public static EventBus<? extends EntityHolder> getOrCreateEventBus() throws TooManyListenersException {
+    public static EventBus<? extends EntityHolder> getOrCreateEventBus() {
         return getOrCreateEventBus(DEFAULT_NAME);
     }
 
-    public static EventBus<? extends EntityHolder> getOrCreateEventBus(String eventBusName) throws TooManyListenersException {
+    public static EventBus<? extends EntityHolder> getOrCreateEventBus(String eventBusName) {
         if (buses.containsKey(eventBusName)) {
             return buses.get(eventBusName);
         } else {
-            return new EventBus<>(eventBusName);
+            try {
+                return new EventBus<>(eventBusName);
+            } catch (TooManyListenersException e) {
+                e.printStackTrace();
+                return null;
+            }
         }
     }
 
@@ -350,7 +357,7 @@ public class EventBus<T extends EntityHolder> {
             return;
         }
         if (holders.containsKey(holder.getType())) {
-            LOGGER.severe("EventBus: <" + eventBusName + "> registration failed, holder already defined.");
+            LOGGER.severe("EventBus: <" + eventBusName + "> registration failed, holder <" + holder.getType() + "> already defined. " + holder.getClass());
             return;
         }
         holder.setLoggingLevel(getLoggingLevel());
@@ -392,7 +399,7 @@ public class EventBus<T extends EntityHolder> {
      *
      * @param holder must implement {@link EntityHolder}, may be an instance of {@link AbstractEntityHolder}
      */
-    public void registerOrUpdate(T holder) {
+    public void registerOrUpdate(@NotNull T holder) {
         if (getHolder(holder.getType()) != null) {
             update(holder);
         } else {

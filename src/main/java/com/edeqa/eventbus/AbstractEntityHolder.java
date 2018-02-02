@@ -13,7 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @SuppressWarnings("WeakerAccess")
-abstract public class AbstractEntityHolder<T,U> implements EntityHolder<T,U> {
+abstract public class AbstractEntityHolder<T,U,V> implements EntityHolder<T,U,V> {
 
     public static final String PRINT_HOLDER_NAME = "print_holder_name"; //NON-NLS
     protected static Logger LOGGER = Logger.getLogger(EventBus.class.getName());
@@ -47,14 +47,14 @@ abstract public class AbstractEntityHolder<T,U> implements EntityHolder<T,U> {
      * Will call after holder registration.
      */
     @Override
-    public void start() {
+    public void start() throws Exception {
     }
 
     /**
      * Will call before holder should be unregistered.
      */
     @Override
-    public void finish() {
+    public void finish() throws Exception {
     }
 
     /**
@@ -69,7 +69,7 @@ abstract public class AbstractEntityHolder<T,U> implements EntityHolder<T,U> {
     }
 
     @Override
-    public boolean onEvent(U eventName, Object eventObject) {
+    public boolean onEvent(U eventName, V eventObject) throws Exception {
         if(eventName instanceof String) {
             String eventNameString = (String) eventName;
             LOGGER.info("onEvent performs with eventName: " + eventNameString + ", eventObject: " + eventObject); //NON-NLS

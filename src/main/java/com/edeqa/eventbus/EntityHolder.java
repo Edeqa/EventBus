@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 @SuppressWarnings("WeakerAccess")
-public interface EntityHolder<T,U> {
+public interface EntityHolder<T,U,V> {
 
     void setContext(T context);
 
@@ -20,11 +20,11 @@ public interface EntityHolder<T,U> {
 
     List<String> events();
 
-    void start();
+    void start() throws Exception;
 
-    void finish();
+    void finish() throws Exception;
 
-    boolean onEvent(U eventName, Object eventObject);
+    boolean onEvent(U eventName, V eventObject) throws Exception;
 
     void setLoggingLevel(Level level);
 }

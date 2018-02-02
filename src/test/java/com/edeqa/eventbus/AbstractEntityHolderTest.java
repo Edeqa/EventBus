@@ -68,7 +68,7 @@ public class AbstractEntityHolderTest {
     }
 
 
-    public class SampleHolder extends AbstractEntityHolder<Object> {
+    public class SampleHolder extends AbstractEntityHolder<Object,String,Object> {
 
         public SampleHolder(Object context) {
             super(context);
@@ -84,7 +84,11 @@ public class AbstractEntityHolderTest {
 
         @Override
         public boolean onEvent(String eventName, Object eventObject) {
-            super.onEvent(eventName, eventObject);
+            try {
+                super.onEvent(eventName, eventObject);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             switch(eventName) {
                 case PRINT_HOLDER_NAME:
                     assertEquals(null, eventObject);

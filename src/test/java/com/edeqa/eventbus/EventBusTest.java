@@ -33,8 +33,8 @@ public class EventBusTest {
     private final String context2 = "2";
     private final String context3 = "3";
     private final String context4 = "4";
-    private EventBus eventBus1;
-    private EventBus eventBus2;
+    private EventBus<SampleHolder> eventBus1;
+    private EventBus<SampleHolder> eventBus2;
     private SampleHolder holder1;
     private SampleHolder2 holder2;
     private SampleHolder3 holder3;
@@ -69,8 +69,8 @@ public class EventBusTest {
             eventBus1 = new EventBus<>();
         }
 
-        eventBus1 = EventBus.getOrCreateEventBus();
-        eventBus2 = EventBus.getOrCreateEventBus("second");
+        eventBus1 = (EventBus<SampleHolder>) EventBus.getOrCreateEventBus();
+        eventBus2 = (EventBus<SampleHolder>) EventBus.getOrCreateEventBus("second");
 
         assertEquals(0, eventBus1.getHoldersList().size());
         assertEquals(0, eventBus2.getHoldersList().size());
@@ -195,7 +195,7 @@ public class EventBusTest {
         assertEquals(0, eventBus1.getHoldersList().size());
 
         assertEquals(2, eventBus2.getHoldersList().size());
-        eventBus2.unregister((EntityHolder) null);
+        eventBus2.unregister((SampleHolder) null);
         assertEquals(2, eventBus2.getHoldersList().size());
 
     }
@@ -221,11 +221,11 @@ public class EventBusTest {
 
     @Test
     public void getHolders() throws Exception {
-        assertEquals("SampleHolder", ((SampleHolder) eventBus1.getHolders().get(holder1.getType())).getType());
-        assertEquals("SampleHolder2", ((SampleHolder) eventBus1.getHolders().get(holder2.getType())).getType());
-        assertEquals("SampleHolder", ((SampleHolder) eventBus2.getHolders().get(holder1.getType())).getType());
-        assertEquals("SampleHolder2", ((SampleHolder) eventBus2.getHolders().get(holder2.getType())).getType());
-        assertEquals("SampleHolder3", ((SampleHolder) eventBus2.getHolders().get(holder3.getType())).getType());
+        assertEquals("SampleHolder", eventBus1.getHolders().get(holder1.getType()).getType());
+        assertEquals("SampleHolder2", eventBus1.getHolders().get(holder2.getType()).getType());
+        assertEquals("SampleHolder", eventBus2.getHolders().get(holder1.getType()).getType());
+        assertEquals("SampleHolder2", eventBus2.getHolders().get(holder2.getType()).getType());
+        assertEquals("SampleHolder3", eventBus2.getHolders().get(holder3.getType()).getType());
     }
 
     @Test
@@ -408,23 +408,26 @@ public class EventBusTest {
         EventBus.inspect(null);
     }
 
-    public class SampleHolder extends AbstractEntityHolder<Object> {
+    public class SampleHolder extends AbstractEntityHolder<Object,String,Object> {
 
-        public SampleHolder(Object context) {
+        SampleHolder(Object context) {
             super(context);
         }
 
         @Override
         public List<String> events() {
             super.events();
-            List<String> events = new ArrayList<>();
-            return events;
+            return new ArrayList<>();
         }
 
         @Override
         public boolean onEvent(String eventName, Object eventObject) {
             System.out.println("EVENT " + eventName +":"+ eventObject+ ":"+context.getClass().getSimpleName());
-            super.onEvent(eventName, eventObject);
+            try {
+                super.onEvent(eventName, eventObject);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             switch(eventName) {
                 case PRINT_HOLDER_NAME:
                     assertEquals(null, eventObject);
@@ -444,7 +447,11 @@ public class EventBusTest {
 
         @Override
         public void start() {
-            super.start();
+            try {
+                super.start();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             System.out.println("START "+this.getClass().getSimpleName() + ":"+context.getClass().getSimpleName());
             synchronized (context) {
                 context.notify();
@@ -453,7 +460,11 @@ public class EventBusTest {
 
         @Override
         public void finish() {
-            super.finish();
+            try {
+                super.finish();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             System.out.println("FINISH "+this.getClass().getSimpleName()+ ":"+context.getClass().getSimpleName());
             synchronized (context) {
                 context.notify();
@@ -461,7 +472,7 @@ public class EventBusTest {
         }
     }
     public class SampleHolder2 extends SampleHolder {
-        public SampleHolder2(Object context) {
+        SampleHolder2(Object context) {
             super(context);
         }
         @Override
@@ -486,14 +497,14 @@ public class EventBusTest {
         }
     }
     public class SampleHolder3 extends SampleHolder {
-        public SampleHolder3(Object context) {
+        SampleHolder3(Object context) {
             super(context);
         }
     }
 
     public class SampleHolder4 extends SampleHolder {
         String text;
-        public SampleHolder4(Object context) {
+        SampleHolder4(Object context) {
             super(context);
         }
 

@@ -19,7 +19,7 @@ Step 1. Add the JitPack repository in your root build.gradle at the end of repos
 Step 2. Add the dependency in the app's build.gradle:
 
     dependencies {
-        compile 'com.github.edeqa:eventbus:1.0'
+        compile 'com.github.edeqa:eventbus:1.1'
     }
 
 ### Maven
@@ -38,7 +38,7 @@ Step 2. Add the dependency:
     <dependency>
         <groupId>com.github.edeqa</groupId>
         <artifactId>eventbus</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
     </dependency>
 
 ## How to use
@@ -51,16 +51,21 @@ First, create event bus:
 or just:
 
     eventBus = new EventBus();
+    
+or as a singleton:
+
+    eventBusDefault = EventBus.getOrCreateEventBus();
+    eventBus1 = EventBus.getOrCreateEventBus("first");
 
 Make the class implementing EntityHolder:
 
-    public class SampleHolder implements EntityHolder<Context> {
+    public class SampleHolder implements EntityHolder<Context,String,Object> {
         ...
     }
 
 But much better is to inherit the class from AbstractEntityHolder and implement onEvent for handle events and make some logic.
 
-    public class SampleHolder extends AbstractEntityHolder<Context> {
+    public class SampleHolder extends AbstractEntityHolder<Context,String,Object> {
 
         public SampleHolder(Context context) {
             super(context);
@@ -180,6 +185,8 @@ Cancel inspection:
 See the [Javadoc](https://edeqa.github.io/EventBus/) for more details about the API.
 
 ## History
+
+1.1 - generalization for eventName; now is EntityHolder<T,U,V> and AbstractEntityHolder<T,U,V>; throwing exeptions for EntityHolder#start, EntityHolder#finish, EntityHolder#onEvent
 
 1.0 - EventBus#getEventBuses; EventBus#getEventBus; EventBus#getOrCreateEventBus; eventBus#getEventBusName; EventBus#setLoggingLevel; -EventBus#postSync; tests; fixes
 
