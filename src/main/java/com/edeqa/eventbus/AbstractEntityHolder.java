@@ -13,7 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @SuppressWarnings("WeakerAccess")
-abstract public class AbstractEntityHolder<T> implements EntityHolder<T> {
+abstract public class AbstractEntityHolder<T,U> implements EntityHolder<T,U> {
 
     public static final String PRINT_HOLDER_NAME = "print_holder_name"; //NON-NLS
     protected static Logger LOGGER = Logger.getLogger(EventBus.class.getName());
@@ -69,12 +69,15 @@ abstract public class AbstractEntityHolder<T> implements EntityHolder<T> {
     }
 
     @Override
-    public boolean onEvent(String eventName, Object eventObject) {
-        LOGGER.info("onEvent performs with eventName: " + eventName + ", eventObject: " + eventObject); //NON-NLS
-        switch (eventName) {
-            case PRINT_HOLDER_NAME:
-                System.out.println("EntityHolder name: " + getType()); //NON-NLS
-                break;
+    public boolean onEvent(U eventName, Object eventObject) {
+        if(eventName instanceof String) {
+            String eventNameString = (String) eventName;
+            LOGGER.info("onEvent performs with eventName: " + eventNameString + ", eventObject: " + eventObject); //NON-NLS
+            switch (eventNameString) {
+                case PRINT_HOLDER_NAME:
+                    System.out.println("EntityHolder name: " + getType()); //NON-NLS
+                    break;
+            }
         }
         return true;
     }
