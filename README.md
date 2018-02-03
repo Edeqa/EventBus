@@ -139,6 +139,18 @@ You can update the holder without losing its position in the queue:
 
     eventBus.update(new SampleHolder(this));
 
+## Runner
+
+Methods `start`, `finish` and `onEvent` are processing through `Runner`. `Runner` is a simple class that wraps the `Runnable` into a specific mode. There are two runners predefined in the package: `RUNNER_THREADED` and `RUNNER_SAME_THREAD`. The `DEFAULT_RUNNER` is the same as the `RUNNER_THREADED`. If your environment doesn't allow to use multithread then call for each event bus:
+
+    eventBus.setRunner(EventBus.RUNNER_SAME_THREAD);
+    
+Or, generally:
+
+    EventBus.setMainRunner(EventBus.RUNNER_SAME_THREAD);
+
+Note that `EventBus.setMainRunner` overrides all previously defined runners.
+
 ## Android UI specific
 
 Some of Android tasks (i.e UI interaction) require performing in the main thread. Then, set specific runner for all buses by following code:
@@ -186,7 +198,7 @@ See the [Javadoc](https://edeqa.github.io/EventBus/) for more details about the 
 
 ## History
 
-1.1 - generalization for eventName; now is EntityHolder<T,U,V> and AbstractEntityHolder<T,U,V>; throwing exeptions for EntityHolder#start, EntityHolder#finish, EntityHolder#onEvent
+1.1 - generalization for eventName; now is EntityHolder<T,U,V> and AbstractEntityHolder<T,U,V>; throwing exeptions for EntityHolder#start, EntityHolder#finish, EntityHolder#onEvent; EventBus.RUNNER_THREADED, EventBus.RUNNER_SAME_THREAD
 
 1.0 - EventBus#getEventBuses; EventBus#getEventBus; EventBus#getOrCreateEventBus; eventBus#getEventBusName; EventBus#setLoggingLevel; -EventBus#postSync; tests; fixes
 

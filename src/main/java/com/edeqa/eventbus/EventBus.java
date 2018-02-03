@@ -8,8 +8,6 @@
 
 package com.edeqa.eventbus;
 
-import com.sun.istack.internal.NotNull;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -37,6 +35,14 @@ public class EventBus<T extends EntityHolder> {
             });
         }
     };
+    public static final Runner RUNNER_THREADED = DEFAULT_RUNNER;
+    public static final Runner RUNNER_SAME_THREAD = new EventBus.Runner() {
+        @Override
+        public void post(Runnable runnable) {
+            runnable.run();
+        }
+    };
+
     private final static Logger LOGGER = Logger.getLogger(EventBus.class.getName());
     private static Level loggingLevel = Level.WARNING;
     private static ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -60,15 +66,12 @@ public class EventBus<T extends EntityHolder> {
         if (buses.containsKey(eventBusName)) {
             throw new TooManyListenersException("EventBus: <" + eventBusName + "> already defined.");
         }
-
         this.eventBusName = eventBusName;
         holders = new LinkedHashMap<>();
         events = new HashMap<>();
 
         LOGGER.info("EventBus registered: <" + eventBusName + ">");
-
         setRunner(runnerDefault);
-
         buses.put(eventBusName, this);
     }
 
@@ -399,7 +402,7 @@ public class EventBus<T extends EntityHolder> {
      *
      * @param holder must implement {@link EntityHolder}, may be an instance of {@link AbstractEntityHolder}
      */
-    public void registerOrUpdate(@NotNull T holder) {
+    public void registerOrUpdate(T holder) {
         if (getHolder(holder.getType()) != null) {
             update(holder);
         } else {
