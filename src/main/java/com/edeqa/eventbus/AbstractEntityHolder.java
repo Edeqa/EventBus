@@ -13,7 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @SuppressWarnings("WeakerAccess")
-abstract public class AbstractEntityHolder<T> implements EntityHolder {
+abstract public class AbstractEntityHolder implements EntityHolder {
 
     public static final String PRINT_HOLDER_NAME = "print_holder_name"; //NON-NLS
     protected static Logger LOGGER = Logger.getLogger(EventBus.class.getName());
