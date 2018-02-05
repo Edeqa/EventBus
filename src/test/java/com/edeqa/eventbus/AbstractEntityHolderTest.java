@@ -14,26 +14,16 @@ import static org.junit.Assert.assertEquals;
  * Created 9/20/17.
  */
 public class AbstractEntityHolderTest {
-    private Object context1;
-    private Object context2;
     private SampleHolder holder;
 
     @Before
     public void setUp() throws Exception {
-
-        context1 = new Object();
-        context2 = new Object();
-        holder = new SampleHolder(context1);
+        holder = new SampleHolder();
     }
 
     @Test
     public void constructor() throws Exception {
         System.out.println(holder.toString());
-    }
-
-    @Test
-    public void setContext() throws Exception {
-        holder.setContext(context2);
     }
 
     @Test
@@ -68,11 +58,7 @@ public class AbstractEntityHolderTest {
     }
 
 
-    public class SampleHolder extends AbstractEntityHolder<Object,String,Object> {
-
-        public SampleHolder(Object context) {
-            super(context);
-        }
+    public class SampleHolder extends AbstractEntityHolder {
 
         @Override
         public List<String> events() {

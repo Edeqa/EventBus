@@ -35,8 +35,9 @@ public class EventBus<T extends EntityHolder> {
             });
         }
     };
-    public static final Runner RUNNER_THREADED = DEFAULT_RUNNER;
-    public static final Runner RUNNER_SAME_THREAD = new EventBus.Runner() {
+
+    public static final Runner RUNNER_MULTI_THREAD = DEFAULT_RUNNER;
+    public static final Runner RUNNER_SINGLE_THREAD = new EventBus.Runner() {
         @Override
         public void post(Runnable runnable) {
             runnable.run();
@@ -116,11 +117,11 @@ public class EventBus<T extends EntityHolder> {
         EventBus.loggingLevel = loggingLevel;
     }
 
-    public static EventBus<? extends EntityHolder> getOrCreateEventBus() {
-        return getOrCreateEventBus(DEFAULT_NAME);
+    public static EventBus<? extends EntityHolder> getOrCreate() {
+        return getOrCreate(DEFAULT_NAME);
     }
 
-    public static EventBus<? extends EntityHolder> getOrCreateEventBus(String eventBusName) {
+    public static EventBus<? extends EntityHolder> getOrCreate(String eventBusName) {
         if (buses.containsKey(eventBusName)) {
             return buses.get(eventBusName);
         } else {
@@ -274,8 +275,8 @@ public class EventBus<T extends EntityHolder> {
         return holders;
     }
 
-    public List<T> getHoldersList() {
-        return (List<T>) getHoldersList(eventBusName);
+    public List<? extends EntityHolder> getHoldersList() {
+        return getHoldersList(eventBusName);
     }
 
     public Runner getRunner() {

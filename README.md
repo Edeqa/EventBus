@@ -48,22 +48,22 @@ First, create event bus:
     eventBus1 = new EventBus("first");
     eventBus2 = new EventBus("second");
 
-or just:
+or just using `DEFAULT_NAME`:
 
     eventBus = new EventBus();
     
 or as a singleton:
 
-    eventBusDefault = EventBus.getOrCreateEventBus();
-    eventBus1 = EventBus.getOrCreateEventBus("first");
+    eventBusDefault = EventBus.getOrCreate(); // uses DEFAULT_NAME
+    eventBus1 = EventBus.getOrCreate("first");
 
-Make the class implementing EntityHolder:
+Make the class implementing `EntityHolder`:
 
     public class SampleHolder implements EntityHolder {
         ...
     }
 
-But much better is to inherit the class from AbstractEntityHolder and implement onEvent for handle events and make some logic.
+But much better is to inherit the class from `AbstractEntityHolder` and implement `onEvent` for handle events and make some logic.
 
     public class SampleHolder extends AbstractEntityHolder {
 
@@ -137,19 +137,19 @@ You can update the holder without losing its position in the queue:
 
 ## Runner
 
-Methods `start`, `finish` and `onEvent` are processing through `Runner`. `Runner` is a simple class that wraps the `Runnable` into a specific mode. There are two runners predefined in the package: `RUNNER_THREADED` and `RUNNER_SAME_THREAD`. The `DEFAULT_RUNNER` is the same as the `RUNNER_THREADED`. If your environment doesn't allow to use multithread then call for each event bus:
+Methods `start`, `finish` and `onEvent` are processing through the same `Runner`. `Runner` is a simple class that wraps the `Runnable` into a specific mode. There are two runners predefined in the package: `RUNNER_MULTI_THREAD` and `RUNNER_SINGLE_THREAD`. The `DEFAULT_RUNNER` is the same as the `RUNNER_MULTI_THREAD`. If your environment doesn't allow to use multiple threads then call for each event bus:
 
-    eventBus.setRunner(EventBus.RUNNER_SAME_THREAD);
+    eventBus.setRunner(EventBus.RUNNER_SINGLE_THREAD);
     
-Or, generally:
+Or, commonly:
 
-    EventBus.setMainRunner(EventBus.RUNNER_SAME_THREAD);
+    EventBus.setMainRunner(EventBus.RUNNER_SINGLE_THREAD);
 
 Note that `EventBus.setMainRunner` overrides all previously defined runners.
 
 ## Android UI specific
 
-Some of Android tasks (i.e UI interaction) require performing in the main thread. Then, set specific runner for all buses by following code:
+Some of Android tasks (i.e UI interaction) require fulfillment in the main thread. Then, set specific runner for all buses by following code:
 
     final Handler handler = new Handler(Looper.getMainLooper());
     EventBus.Runner runner = new EventBus.Runner() {
@@ -160,9 +160,11 @@ Some of Android tasks (i.e UI interaction) require performing in the main thread
     };
     EventBus.setMainRunner(runner);
 
-Or separately:
+Or, separately:
 
-    eventBus.setRunner(runner);
+    eventBus1.setRunner(runner);
+    eventBus2.setRunner(runner);
+    eventBus3.setRunner(EventBus.RUNNER_SINGLE_THREAD);
 
 Note that `EventBus.setMainRunner` overrides all previously defined runners.
 
@@ -187,14 +189,13 @@ Cancel inspection:
 
     EventBus.inspect(null);
 
-
 ## Javadoc
 
 See the [Javadoc](https://edeqa.github.io/EventBus/) for more details about the API.
 
 ## History
 
-1.1 - throwing exeptions for EntityHolder#start, EntityHolder#finish, EntityHolder#onEvent; EventBus.RUNNER_THREADED, EventBus.RUNNER_SAME_THREAD; entityHolder#setContext has removed
+2 - throwing exceptions for EntityHolder#start, EntityHolder#finish, EntityHolder#onEvent; EventBus.RUNNER_MULTI_THREAD, EventBus.RUNNER_SINGLE_THREAD; -entityHolder#setContext; -EntityHolder(Context); removed T from EntityHolder<T>, so now it is just EntityHolder; EventBus#getOrCreateEventBus renamed to EventBus#getOrCreate
 
 1.0 - EventBus#getEventBuses; EventBus#getEventBus; EventBus#getOrCreateEventBus; eventBus#getEventBusName; EventBus#setLoggingLevel; -EventBus#postSync; tests; fixes
 

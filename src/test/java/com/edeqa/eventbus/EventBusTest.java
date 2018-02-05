@@ -69,8 +69,8 @@ public class EventBusTest {
             eventBus1 = new EventBus<>();
         }
 
-        eventBus1 = (EventBus<SampleHolder>) EventBus.getOrCreateEventBus();
-        eventBus2 = (EventBus<SampleHolder>) EventBus.getOrCreateEventBus("second");
+        eventBus1 = (EventBus<SampleHolder>) EventBus.getOrCreate();
+        eventBus2 = (EventBus<SampleHolder>) EventBus.getOrCreate("second");
 
         assertEquals(0, eventBus1.getHoldersList().size());
         assertEquals(0, eventBus2.getHoldersList().size());
@@ -408,10 +408,13 @@ public class EventBusTest {
         EventBus.inspect(null);
     }
 
-    public class SampleHolder extends AbstractEntityHolder<Object,String,Object> {
+    public class SampleHolder extends AbstractEntityHolder {
+
+        protected Object context;
 
         SampleHolder(Object context) {
-            super(context);
+            super();
+            this.context = context;
         }
 
         @Override
@@ -549,13 +552,13 @@ public class EventBusTest {
 
     @Test
     public void getOrCreateEventBus() throws Exception {
-        assertEquals(EventBus.DEFAULT_NAME, EventBus.getOrCreateEventBus().getEventBusName());
+        assertEquals(EventBus.DEFAULT_NAME, EventBus.getOrCreate().getEventBusName());
     }
 
     @Test
     public void getOrCreateEventBus1() throws Exception {
-        assertEquals("second", EventBus.getOrCreateEventBus("second").getEventBusName());
-        assertEquals("third", EventBus.getOrCreateEventBus("third").getEventBusName());
+        assertEquals("second", EventBus.getOrCreate("second").getEventBusName());
+        assertEquals("third", EventBus.getOrCreate("third").getEventBusName());
         assertEquals(3, EventBus.fetchEventBusesList().size());
     }
 
