@@ -13,28 +13,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @SuppressWarnings("WeakerAccess")
-abstract public class AbstractEntityHolder<T,U,V> implements EntityHolder<T,U,V> {
+abstract public class AbstractEntityHolder<T> implements EntityHolder {
 
     public static final String PRINT_HOLDER_NAME = "print_holder_name"; //NON-NLS
     protected static Logger LOGGER = Logger.getLogger(EventBus.class.getName());
-
-    protected T context;
 
     private Level loggingLevel = Level.WARNING;
 
     protected AbstractEntityHolder() {
         LOGGER.setLevel(loggingLevel);
         LOGGER.info("AbstractEntityHolder:init"); //NON-NLS
-    }
-
-    protected AbstractEntityHolder(T context) {
-        this();
-        this.context = context;
-    }
-
-    @Override
-    public void setContext(T context) {
-        this.context = context;
     }
 
     @Override
@@ -69,15 +57,12 @@ abstract public class AbstractEntityHolder<T,U,V> implements EntityHolder<T,U,V>
     }
 
     @Override
-    public boolean onEvent(U eventName, V eventObject) throws Exception {
-        if(eventName instanceof String) {
-            String eventNameString = (String) eventName;
-            LOGGER.info("onEvent performs with eventName: " + eventNameString + ", eventObject: " + eventObject); //NON-NLS
-            switch (eventNameString) {
-                case PRINT_HOLDER_NAME:
-                    System.out.println("EntityHolder name: " + getType()); //NON-NLS
-                    break;
-            }
+    public boolean onEvent(String eventName, Object eventObject) throws Exception {
+        LOGGER.info(getType() + ".onEvent performs with eventName: " + eventName + ", eventObject: " + eventObject); //NON-NLS
+        switch (eventName) {
+            case PRINT_HOLDER_NAME:
+                System.out.println("EntityHolder name: " + getType()); //NON-NLS
+                break;
         }
         return true;
     }
@@ -90,7 +75,7 @@ abstract public class AbstractEntityHolder<T,U,V> implements EntityHolder<T,U,V>
 
     @Override
     public String toString() {
-        return "EntityHolder{" +
+        return this.getClass().getSimpleName() + "{" +
                 "type=" + getType() +
                 '}';
     }

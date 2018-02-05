@@ -104,7 +104,7 @@ public class EventBus<T extends EntityHolder> {
         return buses.get(eventBusName).getHolders();
     }
 
-    public static List<EntityHolder> getHoldersList(String eventBusName) {
+    public static List<? extends EntityHolder> getHoldersList(String eventBusName) {
         return new ArrayList<>(getHolders(eventBusName).values());
     }
 
@@ -262,7 +262,7 @@ public class EventBus<T extends EntityHolder> {
         return eventBusName;
     }
 
-    public EntityHolder getHolder(String type) {
+    public T getHolder(String type) {
         if (holders.containsKey(type)) return holders.get(type);
         return null;
     }
@@ -274,8 +274,8 @@ public class EventBus<T extends EntityHolder> {
         return holders;
     }
 
-    public List<EntityHolder> getHoldersList() {
-        return getHoldersList(eventBusName);
+    public List<T> getHoldersList() {
+        return (List<T>) getHoldersList(eventBusName);
     }
 
     public Runner getRunner() {
@@ -319,7 +319,6 @@ public class EventBus<T extends EntityHolder> {
             @Override
             public void run() {
                 LOGGER.fine("EventBus: <" + eventBusName + ">, starting postSync for eventName: " + eventName + ", eventObject: " + eventObject);
-
                 for (Map.Entry<String, ? extends EntityHolder> entry : getHolders().entrySet()) {
                     try {
                         if (events.containsKey(eventName) && !events.get(eventName).containsKey(entry.getValue().getType())) {

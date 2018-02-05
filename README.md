@@ -59,17 +59,13 @@ or as a singleton:
 
 Make the class implementing EntityHolder:
 
-    public class SampleHolder implements EntityHolder<Context,String,Object> {
+    public class SampleHolder implements EntityHolder {
         ...
     }
 
 But much better is to inherit the class from AbstractEntityHolder and implement onEvent for handle events and make some logic.
 
-    public class SampleHolder extends AbstractEntityHolder<Context,String,Object> {
-
-        public SampleHolder(Context context) {
-            super(context);
-        }
+    public class SampleHolder extends AbstractEntityHolder {
 
         @Override
         public boolean onEvent(String eventName, Object eventObject) {
@@ -90,7 +86,7 @@ But much better is to inherit the class from AbstractEntityHolder and implement 
 
 Register it in the bus:
 
-    eventBus.register(new SampleHolder(this));
+    eventBus.register(new SampleHolder());
 
 ### Posting event
 
@@ -137,7 +133,7 @@ Events `event1` and `event2` will be posted only to specific holder (or holders)
 
 You can update the holder without losing its position in the queue:
 
-    eventBus.update(new SampleHolder(this));
+    eventBus.update(new SampleHolder());
 
 ## Runner
 
@@ -198,7 +194,7 @@ See the [Javadoc](https://edeqa.github.io/EventBus/) for more details about the 
 
 ## History
 
-1.1 - generalization for eventName; now is EntityHolder<T,U,V> and AbstractEntityHolder<T,U,V>; throwing exeptions for EntityHolder#start, EntityHolder#finish, EntityHolder#onEvent; EventBus.RUNNER_THREADED, EventBus.RUNNER_SAME_THREAD
+1.1 - throwing exeptions for EntityHolder#start, EntityHolder#finish, EntityHolder#onEvent; EventBus.RUNNER_THREADED, EventBus.RUNNER_SAME_THREAD; entityHolder#setContext has removed
 
 1.0 - EventBus#getEventBuses; EventBus#getEventBus; EventBus#getOrCreateEventBus; eventBus#getEventBusName; EventBus#setLoggingLevel; -EventBus#postSync; tests; fixes
 
