@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 abstract public class AbstractEntityHolder implements EntityHolder {
 
     public static final String PRINT_HOLDER_NAME = "print_holder_name"; //NON-NLS
-    protected static Logger LOGGER = Logger.getLogger(EventBus.class.getName());
+    protected static final Logger LOGGER = Logger.getLogger(EventBus.class.getName());
 
     private Level loggingLevel = Level.WARNING;
 
