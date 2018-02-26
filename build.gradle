@@ -8,7 +8,8 @@ repositories {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'junit:junit:4.12'
+    //noinspection GradleDynamicVersion
+    compile 'junit:junit:+'
 }
 
 task javaDoc (type: Javadoc) {
