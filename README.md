@@ -19,7 +19,7 @@ Step 1. Add the JitPack repository in your root build.gradle at the end of repos
 Step 2. Add the dependency in the app's build.gradle:
 
     dependencies {
-        compile 'com.github.edeqa:eventbus:1.1'
+        compile 'com.github.edeqa:eventbus:2'
     }
 
 ### Maven
@@ -38,7 +38,7 @@ Step 2. Add the dependency:
     <dependency>
         <groupId>com.github.edeqa</groupId>
         <artifactId>eventbus</artifactId>
-        <version>1.1</version>
+        <version>2</version>
     </dependency>
 
 ## How to use
@@ -66,7 +66,6 @@ Make the class implementing `EntityHolder`:
 But much better is to inherit the class from `AbstractEntityHolder` and implement `onEvent` for handle events and make some logic.
 
     public class SampleHolder extends AbstractEntityHolder {
-
         @Override
         public boolean onEvent(String eventName, Object eventObject) {
             switch(eventName) {
@@ -191,29 +190,23 @@ Cancel inspection:
 
 ## Javadoc
 
-See the [Javadoc](https://edeqa.github.io/EventBus/) for more details about the API.
+See the [Javadoc](https://edeqa.github.io/EventBus/) for more details on API.
 
 ## History
 
-2 - throwing exceptions for EntityHolder#start, EntityHolder#finish, EntityHolder#onEvent; EventBus.RUNNER_MULTI_THREAD, EventBus.RUNNER_SINGLE_THREAD; -entityHolder#setContext; -EntityHolder(Context); removed T from EntityHolder<T>, so now it is just EntityHolder; EventBus#getOrCreateEventBus renamed to EventBus#getOrCreate
+2 - throwing exceptions for EntityHolder#start, EntityHolder#finish, EntityHolder#onEvent; EventBus.RUNNER_MULTI_THREAD, EventBus.RUNNER_SINGLE_THREAD; -entityHolder#setContext; -EntityHolder(Context); removed T from EntityHolder<T>, so now it's just EntityHolder; EventBus#getOrCreateEventBus renamed to EventBus#getOrCreate
 
-1.0 - EventBus#getEventBuses; EventBus#getEventBus; EventBus#getOrCreateEventBus; eventBus#getEventBusName; EventBus#setLoggingLevel; -EventBus#postSync; tests; fixes
-
-0.9 - fixes
+1.0 - EventBus#getEventBuses; EventBus#getEventBus; EventBus#getOrCreateEventBus; eventBus#getEventBusName; EventBus#setLoggingLevel; -EventBus#postSync; tests
 
 0.8 - eventBus#registerOrUpdate; eventBus#unregister; javadoc
 
-0.7 - refactoring to interface; fixes
+0.7 - refactoring to interface
 
-0.6 - eventBus#postRunnable; docs; fixes
+0.6 - eventBus#postRunnable; docs
 
-0.5 - update#holder; post#Runnable; EventBus#inspect; debug; fixes
+0.5 - update#holder; post#Runnable; EventBus#inspect; debug
 
 0.4 - limit events
-
-0.3 - fixes
-
-0.2 - fixes
 
 0.1 - initial
 
