@@ -69,7 +69,9 @@ public class EventBusTest {
             eventBus1 = new EventBus<>();
         }
 
+        //noinspection unchecked
         eventBus1 = (EventBus<SampleHolder>) EventBus.getOrCreate();
+        //noinspection unchecked
         eventBus2 = (EventBus<SampleHolder>) EventBus.getOrCreate("second");
 
         assertEquals(0, eventBus1.getHoldersList().size());
