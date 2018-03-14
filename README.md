@@ -194,6 +194,8 @@ See the [Javadoc](https://edeqa.github.io/EventBus/) for more details on API.
 
 ## History
 
+3 - eventBus#registerIfAbsent
+
 2 - throwing exceptions for EntityHolder#start, EntityHolder#finish, EntityHolder#onEvent; EventBus.RUNNER_MULTI_THREAD, EventBus.RUNNER_SINGLE_THREAD; -entityHolder#setContext; -EntityHolder(Context); removed T from EntityHolder<T>, so now it's just EntityHolder; EventBus#getOrCreateEventBus renamed to EventBus#getOrCreate
 
 1.0 - EventBus#getEventBuses; EventBus#getEventBus; EventBus#getOrCreateEventBus; eventBus#getEventBusName; EventBus#setLoggingLevel; -EventBus#postSync; tests

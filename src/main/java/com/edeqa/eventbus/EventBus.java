@@ -411,6 +411,23 @@ public class EventBus<T extends EntityHolder> {
     }
 
     /**
+     * Registers the holder in event bus only if it is not registered.
+     *
+     * @param holder must implement {@link EntityHolder}, may be an instance of {@link AbstractEntityHolder}
+     * @return registered holder
+     */
+    public T registerIfAbsent(T holder) {
+        T existingHolder = getHolder(holder.getType());
+        if (existingHolder == null) {
+            register(holder);
+        } else {
+            LOGGER.info("EventBus: <" + eventBusName + "> holder already registered, skipped: " + holder.getType());
+            holder = existingHolder;
+        }
+        return holder;
+    }
+
+    /**
      * Updates the holder and keeps its order in the queue.
      *
      * @param holder must implement {@link EntityHolder}, may be an instance of {@link AbstractEntityHolder}
