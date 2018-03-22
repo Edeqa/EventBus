@@ -93,7 +93,7 @@ public class AbstractEntityHolderTest {
     @Test
     public void toStringTest() throws Exception {
 
-        assertEquals("EntityHolder{type=SampleHolder}", holder.toString());
+        assertEquals("SampleHolder{type=SampleHolder}", holder.toString());
     }
 
 
