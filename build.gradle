@@ -17,6 +17,3 @@ task javaDoc (type: Javadoc) {
     classpath += configurations.compile
     destinationDir = file("${projectDir}/docs")
 }
-
-sourceCompatibility = "1.7"
-targetCompatibility = "1.7"
