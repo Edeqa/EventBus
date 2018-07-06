@@ -136,7 +136,7 @@ You can update the holder without losing its position in the queue:
 
 ## Runner
 
-Methods `start`, `finish` and `onEvent` are processing through the same `Runner`. `Runner` is a simple class that wraps the `Runnable` into a specific mode. There are two runners predefined in the package: `RUNNER_MULTI_THREAD` and `RUNNER_SINGLE_THREAD`. The `DEFAULT_RUNNER` is the same as the `RUNNER_MULTI_THREAD`. If your environment doesn't allow to use multiple threads then call for each event bus:
+Methods `start`, `finish` and `onEvent` are processing through the same `Runner`. `Runner` is a simple class that wraps the `Runnable` into a specific mode. There are two runners predefined in the package: `RUNNER_MULTI_THREAD` and `RUNNER_SINGLE_THREAD`. The `DEFAULT_RUNNER` is the same as the `RUNNER_MULTI_THREAD`. If your environment doesn't allow to use multiple threads then accept for each event bus:
 
     eventBus.setRunner(EventBus.RUNNER_SINGLE_THREAD);
     
