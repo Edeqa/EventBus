@@ -2,7 +2,7 @@
  * EventBus - a simple event bus
  * https://github.com/Edeqa/EventBus
  *
- * Copyright (C) 2017 Edeqa <http://www.edeqa.com>
+ * Copyright (C) 2017-18 Edeqa <http://www.edeqa.com>
  * Created by Edward Mukhutdinov <tujger@gmail.com>
  */
 
@@ -61,6 +61,18 @@ abstract public class AbstractEntityHolder implements EntityHolder {
         LOGGER.info(getType() + ".onEvent performs with eventName: " + eventName + ", eventObject: " + eventObject); //NON-NLS
         switch (eventName) {
             case PRINT_HOLDER_NAME:
+                System.out.println("EntityHolder name: " + getType()); //NON-NLS
+                break;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onEvent(PostEvent postEvent) throws Exception {
+        LOGGER.info(getType() + ".onEvent performs with eventName: " + postEvent.getEventName() + ", eventObject: " + postEvent.getEventObject()); //NON-NLS
+        switch (postEvent.getEventName()) {
+            case PRINT_HOLDER_NAME:
+                postEvent.increaseCounter();
                 System.out.println("EntityHolder name: " + getType()); //NON-NLS
                 break;
         }

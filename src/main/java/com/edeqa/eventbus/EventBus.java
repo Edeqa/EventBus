@@ -2,7 +2,7 @@
  * EventBus - a simple event bus
  * https://github.com/Edeqa/EventBus
  *
- * Copyright (C) 2017 Edeqa <http://www.edeqa.com>
+ * Copyright (C) 2017-18 Edeqa <http://www.edeqa.com>
  * Created by Edward Mukhutdinov <tujger@gmail.com>
  */
 
@@ -43,6 +43,8 @@ public class EventBus<T extends EntityHolder> {
             runnable.run();
         }
     };
+
+    public static final PostEvent FALLBACK_EVENT = new PostEvent("FallbackEvent");
 
     private final static Logger LOGGER = Logger.getLogger(EventBus.class.getName());
     private static Level loggingLevel = Level.WARNING;
@@ -294,12 +296,7 @@ public class EventBus<T extends EntityHolder> {
         LOGGER.config("EventBus: <" + eventBusName + "> set runner: " + runner);
     }
 
-    /**
-     * Events poster. Events will be posted to holders using {@link Runner}.
-     *
-     * @param eventName any not empty event name, i.e. "event1"
-     */
-    public void post(String eventName) {
+    private void postString(String eventName) {
         post(eventName, null);
     }
 
@@ -337,6 +334,72 @@ public class EventBus<T extends EntityHolder> {
                 }
             }
         });
+    }
+
+    private void postPostEvent(final PostEvent postEvent) {
+        if(postEvent.getEventName() == null) {
+            LOGGER.severe("EventBus: <" + eventBusName + ">, post failed because of event is NULL.");
+        } else if(postEvent.isFulfilled()) {
+            LOGGER.severe("EventBus: <" + eventBusName + ">, post failed because of PostEvent was already fulfilled: " + postEvent + ". Use EventBus.inspect(\"" + postEvent.getEventName() + "\"); to resolve the issue.");
+        } else {
+            if (inspect.size() > 0) {
+                if (inspect.contains(postEvent.getEventName())) {
+                    LOGGER.severe("EventBus: <" + eventBusName + ">, inspection for eventName " + postEvent.getEventName() + " caught:");
+                    Thread.dumpStack();
+                }
+            }
+            getRunner().post(new Runnable() {
+                @Override
+                public void run() {
+                    LOGGER.fine("EventBus: <" + eventBusName + ">, starting postSync for eventName: " + postEvent.getEventName() + ", eventObject: " + postEvent.getEventObject());
+                    int fulfillments = postEvent.getFulfillment();
+                    System.out.println("====== " + postEvent);
+                    for (Map.Entry<String, ? extends EntityHolder> entry : getHolders().entrySet()) {
+                        try {
+                            if (events.containsKey(postEvent.getEventName()) && !events.get(postEvent.getEventName()).containsKey(entry.getValue().getType())) {
+                                LOGGER.fine("EventBus: <" + eventBusName + "> skips holder: " + entry.getValue() + ", eventName: " + postEvent.getEventName() + " because of holder was not adjusted for this event.");
+                                continue;
+                            }
+                            LOGGER.fine("EventBus: <" + eventBusName + "> holder: " + entry.getValue() + ", eventName: " + postEvent.getEventName() + ", eventObject: " + postEvent.getEventObject());
+                            if (!entry.getValue().onEvent(postEvent)) {
+                                break;
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            LOGGER.severe("EventBus: <" + eventBusName + ">, post failed for holder: " + entry.getValue() + ", eventName: " + postEvent.getEventName() + ", eventObject: " + postEvent.getEventObject() + ". Use EventBus.inspect(\"" + postEvent.getEventName() + "\"); to resolve the issue.");
+                        }
+                    }
+                    if(!postEvent.isFulfilled() && fulfillments == postEvent.getFulfillment() && !postEvent.equals(FALLBACK_EVENT)) {
+                        LOGGER.severe("EventBus: <" + eventBusName + ">, post was fulfilled 0 times: " + postEvent + ". Use EventBus.inspect(\"" + postEvent.getEventName() + "\"); to resolve the issue.");
+                        FALLBACK_EVENT.setEventObject(postEvent);
+                        FALLBACK_EVENT.setFulfilled(false);
+
+                        LOGGER.severe("EventBus: <" + eventBusName + ">, " + getHolders());
+
+                        FALLBACK_EVENT.setMaxFulfillment(FALLBACK_EVENT.getFulfillment() + getHolders().size() + 1);
+                        LOGGER.severe("EventBus: <" + eventBusName + ">, is fulfilling the FALLBACK_EVENT: " + FALLBACK_EVENT);
+                        postPostEvent(FALLBACK_EVENT);
+                    }
+                }
+            });
+        }
+    }
+
+    /**
+     * Events poster. Events will be posted to holders using {@link Runner}.
+     *
+     * @param event any not empty event name, i.e. "event1"
+     */
+    public void post(Object event) {
+        if(event == null) {
+            LOGGER.severe("EventBus: <" + eventBusName + ">, post failed because of event is NULL.");
+        } else if(event instanceof String) {
+            postString((String) event);
+        } else if(event instanceof Runnable) {
+            postRunnable((Runnable) event);
+        } else if(event instanceof PostEvent) {
+            postPostEvent((PostEvent) event);
+        }
     }
 
     /**

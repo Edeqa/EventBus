@@ -261,6 +261,18 @@ public class EventBusTest {
         synchronized (context3) {
             context3.wait();
         }
+        EventBus.inspect("print_holder_name");
+        PostEvent postEvent = new PostEvent(PRINT_HOLDER_NAME);
+        eventBus1.post(postEvent);
+        synchronized (context2) {
+            context2.wait();
+        }
+        eventBus1.post(postEvent);
+//        synchronized (context2) {
+//            context2.wait();
+//        }
+
+        Thread.sleep(500);
     }
 
     @Test
@@ -272,6 +284,10 @@ public class EventBusTest {
         eventBus2.post("test_event", "test object");
         synchronized (context3) {
             context3.wait();
+        }
+        eventBus1.post(new PostEvent<String>("test_event", "test object"));
+        synchronized (context2) {
+            context2.wait();
         }
     }
 
@@ -441,13 +457,30 @@ public class EventBusTest {
                     assertEquals("test object", eventObject);
                     break;
                 default:
-                    assertEquals("", eventName);
+//                    assertEquals("", eventName);
             }
             synchronized (context) {
                 context.notify();
             }
             System.out.println("POSTED " + eventName +":"+ eventObject+ ":"+context.getClass().getSimpleName());
             return true; // if returns false then chain will be interrupted
+        }
+
+        @Override
+        public boolean onEvent(PostEvent postEvent) {
+            System.out.println("EVENT " + postEvent);
+            try {
+                super.onEvent(postEvent);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            switch(postEvent.getEventName()) {
+                case PRINT_HOLDER_NAME:
+                case "test_event":
+                    postEvent.increaseCounter();
+                    break;
+            }
+            return onEvent(postEvent.getEventName(), postEvent.getEventObject());
         }
 
         @Override
@@ -499,6 +532,21 @@ public class EventBusTest {
             }
             super.onEvent(eventName, eventObject);
             return true;
+        }
+        @Override
+        public boolean onEvent(PostEvent postEvent) {
+            System.out.println("EVENT " + postEvent);
+            try {
+                super.onEvent(postEvent);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            switch(postEvent.getEventName()) {
+                case TEST_EVENT2:
+                    postEvent.increaseCounter();
+                    break;
+            }
+            return onEvent(postEvent.getEventName(), postEvent.getEventObject());
         }
     }
     public class SampleHolder3 extends SampleHolder {

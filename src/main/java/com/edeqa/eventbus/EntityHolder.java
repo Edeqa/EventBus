@@ -2,7 +2,7 @@
  * EventBus - a simple event bus
  * https://github.com/Edeqa/EventBus
  *
- * Copyright (C) 2017 Edeqa <http://www.edeqa.com>
+ * Copyright (C) 2017-18 Edeqa <http://www.edeqa.com>
  * Created by Edward Mukhutdinov <tujger@gmail.com>
  */
 
@@ -23,6 +23,8 @@ public interface EntityHolder {
     void finish() throws Exception;
 
     boolean onEvent(String eventName, Object eventObject) throws Exception;
+
+    boolean onEvent(PostEvent postEvent) throws Exception;
 
     void setLoggingLevel(Level level);
 }
