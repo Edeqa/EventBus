@@ -19,7 +19,7 @@ Step 1. Add the JitPack repository in your root build.gradle at the end of repos
 Step 2. Add the dependency in the app's build.gradle:
 
     dependencies {
-        compile 'com.github.edeqa:eventbus:4'
+        compile 'com.github.edeqa:eventbus:3'
     }
 
 ### Maven
@@ -38,7 +38,7 @@ Step 2. Add the dependency:
     <dependency>
         <groupId>com.github.edeqa</groupId>
         <artifactId>eventbus</artifactId>
-        <version>4</version>
+        <version>3</version>
     </dependency>
 
 ## How to use
@@ -101,12 +101,6 @@ Post event to all registered buses:
 
 Event will be posted to all holders in the order that holders were registered.
 
-If you have to be sure that some of holders fulfilled the event use [PostEvent](#postevent):
-
-    eventBus.post(new PostEvent("event1"));
-    eventBus.post(new PostEvent("event2", "argument2"));
-    eventBus.post(new PostEvent("event3", "argument3", 3));
-
 ### Specific task in queue
 
 If you want to run some specific task in the same queue as events then use `post#Runnable`:
@@ -139,30 +133,6 @@ Events `event1` and `event2` will be posted only to specific holder (or holders)
 You can update the holder without losing its position in the queue:
 
     eventBus.update(new SampleHolder());
-
-## PostEvent
-
-PostEvent is an object allows to be sure that event was fulfilled by some holder. 
-
-    eventBus.post(new PostEvent("event1"));
-    eventBus.post(new PostEvent("event2", "argument2"));
-    eventBus.post(new PostEvent("event3", "argument3", 3));
-
-General syntax:
-
-    postEvent = new PostEvent(eventName, eventObject, maxFulfillment)
-    
-Arguments `eventObject` and `maxFulfillment` are optional. After `postEvent` processes `maxFulfillment` times (or 1 by default) `postEvent.isFulfilled()` will return `true`.
-
-Important methods:
-
-`postEvent.ifFulfilled()` - checks for processing `postEvent` needed times,
-
-`postEvent.get/setMaxFulfillment(int)` - get/set maximum amount of fulfillment,
-
-`postEvent.getFulfillment()` - returns current counter.
-
-If `postEvent` was fulfilled 0 times then `eventBus` will post the `FALLBACK_EVENT` with `eventName = "FallbackEvent"` and `eventObject = postEvent`.
 
 ## Runner
 
@@ -223,8 +193,6 @@ Cancel inspection:
 See the [Javadoc](https://edeqa.github.io/EventBus/) for more details on API.
 
 ## History
-
-4 - PostEvent if there are requirements to be sure that event was fulfilled
 
 3 - eventBus#registerIfAbsent
 
